@@ -3,7 +3,7 @@
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-icon">🏢</span>
-      <span class="brand-title">KARDEMİR Puantaj</span>
+      <span class="brand-title">Puantaj Portal</span>
     </div>
     <nav class="nav-menu">
       <button class="nav-item" [class.active]="aktifSekme === 'gunluk'" (click)="aktifSekme = 'gunluk'">
@@ -110,7 +110,7 @@
                   <th>Giriş Saati</th>
                   <th>Çıkış Saati</th>
                   <th>Otomatik Durum</th>
-                  <th>Mazeret Türü (Her Daim Açık)</th>
+                  <th>Mazeret Türü</th>
                   <th>Mazeret / Vardiya Notu</th>
                 </tr>
               </thead>
@@ -134,7 +134,6 @@
                     </span>
                   </td>
                   <td>
-                    <!-- Mazeret Türü Artık Her Şartta Açık -->
                     <select class="form-control-sm" [(ngModel)]="p.mazeretTuru">
                       <option value="">Mazeret Yok / Temiz</option>
                       <option value="Doktor Sevk">Doktor Sevk</option>
@@ -202,7 +201,7 @@
                 <tr>
                   <th>Tarih</th>
                   <th>Gün</th>
-                  <th>Günlük Çalışma / İzin Durumu (Düzenlenebilir)</th>
+                  <th>Günlük Çalışma / İzin Durumu</th>
                   <th>Giriş Saati</th>
                   <th>Çıkış Saati</th>
                   <th>Açıklama / Not</th>
@@ -216,7 +215,6 @@
                   <td><strong>{{ gun.tarih }}</strong></td>
                   <td>{{ gun.gunAdi }}</td>
                   <td>
-                    <!-- Aylık Puantaj Düzenleme Seçeneği -->
                     <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
                       <option value="NORMAL">NORMAL (8 Saat)</option>
                       <option value="HAFTA_IZNI">HAFTA İZNİ</option>

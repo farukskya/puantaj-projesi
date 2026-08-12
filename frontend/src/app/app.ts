@@ -54,8 +54,12 @@ export class AppComponent implements OnInit {
   toplamMazeret: number = 0;
   toplamDevamsiz: number = 0;
 
-  // Hiyerarşik Seçenekler
-  direktorlikler: string[] = ['İnsan Kaynakları ve İdari İşler', 'Demir Çelik Üretim Direktörlüğü', 'Mühendislik & Otomasyon Direktörlüğü'];
+  // Genel Hiyerarşik Seçenekler
+  direktorlikler: string[] = [
+    'Teknoloji ve Yazılım Direktörlüğü',
+    'Üretim ve Operasyon Direktörlüğü',
+    'İnsan Kaynakları Direktörlüğü'
+  ];
   mudurlukler: string[] = [];
   basmuhendislikler: string[] = [];
   bolumler: string[] = [];
@@ -63,50 +67,92 @@ export class AppComponent implements OnInit {
   personelListesi: Personel[] = [];
   aylikPuantajListesi: GunlukPuantaj[] = [];
 
+  // Genel Mock Veri Deposu (Firma İsmi İçermez)
+  private mockPersonelDeposu: { [key: string]: Personel[] } = {
+    'Puantaj ve İK Sistemleri Birimi': [
+      { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+      { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu' },
+      { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi' },
+      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+      { sicilNo: 'PER-1150', adSoyad: 'Caner Şahin', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+    ],
+    'Saha Otomasyon Birimi': [
+      { sicilNo: 'PER-2011', adSoyad: 'Murat Öztürk', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+      { sicilNo: 'PER-2034', adSoyad: 'Serhat Arslan', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+      { sicilNo: 'PER-2090', adSoyad: 'Emre Yıldız', girisSaati: '08:00', cikisSaati: '12:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI', mazeretTuru: 'Sıhhi İzin', mazeretNotu: 'Revir sevki' }
+    ],
+    'Mekanik Bakım Birimi': [
+      { sicilNo: 'PER-3001', adSoyad: 'Hasan Yurt', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+      { sicilNo: 'PER-3012', adSoyad: 'İbrahim Güneş', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+    ]
+  };
+
   ngOnInit() {
     this.generate30GunlukPuantaj();
     this.aylikOzetHesapla();
   }
 
-  // Hiyerarşik Açılır Menü Değişim Olayları
+  // Hiyerarşik Seçim Olayları
   onDirektorlikChange() {
     this.secilenMudurluk = '';
     this.secilenBasmuhendislik = '';
     this.secilenBolum = '';
-    this.mudurlukler = this.secilenDirektorlik ? ['Yazılım ve Otomasyon Müdürlüğü', 'Sistem ve Ağ Yönetimi Müdürlüğü'] : [];
     this.basmuhendislikler = [];
     this.bolumler = [];
     this.personelListesi = [];
+
+    if (this.secilenDirektorlik === 'Teknoloji ve Yazılım Direktörlüğü') {
+      this.mudurlukler = ['Yazılım ve Otomasyon Müdürlüğü', 'Sistem ve Ağ Yönetimi Müdürlüğü'];
+    } else if (this.secilenDirektorlik === 'Üretim ve Operasyon Direktörlüğü') {
+      this.mudurlukler = ['Tesisler Müdürlüğü', 'Bakım Onarım Müdürlüğü'];
+    } else if (this.secilenDirektorlik === 'İnsan Kaynakları Direktörlüğü') {
+      this.mudurlukler = ['İşe Alım ve Özlük İşleri Müdürlüğü', 'Endüstriyel İlişkiler Müdürlüğü'];
+    } else {
+      this.mudurlukler = [];
+    }
   }
 
   onMudurlukChange() {
     this.secilenBasmuhendislik = '';
     this.secilenBolum = '';
-    this.basmuhendislikler = this.secilenMudurluk ? ['Backend Yazılım Başmühendisliği', 'Endüstriyel Veri Başmühendisliği'] : [];
     this.bolumler = [];
     this.personelListesi = [];
+
+    if (this.secilenMudurluk === 'Yazılım ve Otomasyon Müdürlüğü') {
+      this.basmuhendislikler = ['Backend Yazılım Başmühendisliği', 'Endüstriyel Veri Başmühendisliği'];
+    } else if (this.secilenMudurluk === 'Bakım Onarım Müdürlüğü') {
+      this.basmuhendislikler = ['Saha Bakım Başmühendisliği', 'Mekanik Bakım Başmühendisliği'];
+    } else {
+      this.basmuhendislikler = ['Genel Hizmetler Başmühendisliği'];
+    }
   }
 
   onBasmuhendislikChange() {
     this.secilenBolum = '';
-    this.bolumler = this.secilenBasmuhendislik ? ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'] : [];
     this.personelListesi = [];
+
+    if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
+      this.bolumler = ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
+    } else if (this.secilenBasmuhendislik === 'Mekanik Bakım Başmühendisliği') {
+      this.bolumler = ['Mekanik Bakım Birimi'];
+    } else {
+      this.bolumler = ['Standart Çalışma Birimi'];
+    }
   }
 
   onBolumChange() {
-    if (this.secilenBolum) {
+    if (this.secilenBolum && this.mockPersonelDeposu[this.secilenBolum]) {
+      this.personelListesi = JSON.parse(JSON.stringify(this.mockPersonelDeposu[this.secilenBolum]));
+    } else if (this.secilenBolum) {
       this.personelListesi = [
-        { sicilNo: 'KARD-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-        { sicilNo: 'KARD-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Hastane sevk kağıdı İK’ya teslim edildi.' },
-        { sicilNo: 'KARD-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ / EKSİK KART', mazeretTuru: '', mazeretNotu: '' },
-        { sicilNo: 'KARD-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+        { sicilNo: 'PER-9001', adSoyad: 'Örnek Personel 1', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+        { sicilNo: 'PER-9002', adSoyad: 'Örnek Personel 2', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
       ];
     } else {
       this.personelListesi = [];
     }
   }
 
-  // Durum Hesaplayıcı
   hesaplaDurum(p: Personel) {
     if (p.girisSaati === '08:00' && p.cikisSaati === '16:00') {
       p.durum = 'NORMAL';
@@ -120,7 +166,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Toplu Kaydetme
   topluKaydet() {
     if (this.personelListesi.length === 0) {
       alert('Kaydedilecek personel verisi bulunamadı!');
@@ -140,13 +185,12 @@ export class AppComponent implements OnInit {
     }, 1000);
   }
 
-  // 30 Günlük Puantaj Cetveli Üretici
   generate30GunlukPuantaj() {
     const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
     this.aylikPuantajListesi = [];
 
     for (let i = 1; i <= 30; i++) {
-      const gunIndex = (i + 4) % 7; // Ağustos 2026 örnek gün döngüsü
+      const gunIndex = (i + 4) % 7;
       const gunAdi = gunler[gunIndex];
       let durum = 'NORMAL';
       let giris = '08:00';
@@ -157,6 +201,16 @@ export class AppComponent implements OnInit {
         durum = 'HAFTA_IZNI';
         giris = '-';
         cikis = '-';
+      } else if (i === 12) {
+        durum = 'MAZERETLI';
+        giris = '08:00';
+        cikis = '14:00';
+        not = 'Doktor Sevk / Poliklinik';
+      } else if (i === 20) {
+        durum = 'FAZLA_MESAI';
+        giris = '08:00';
+        cikis = '18:00';
+        not = 'Saha Mesaisi';
       } else if (i === 30) {
         durum = 'RESMI_TATIL';
         giris = '-';
@@ -175,7 +229,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Aylık Özet Hesaplama Metodu
   aylikOzetHesapla() {
     if (!this.aylikPuantajListesi) return;
 
@@ -186,7 +239,6 @@ export class AppComponent implements OnInit {
     this.toplamDevamsiz = this.aylikPuantajListesi.filter(g => g.durum === 'DEVAMSIZ').length;
   }
 
-  // Excel Dışa Aktarımı (.xlsx)
   excelIndir() {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.aylikPuantajListesi);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
