@@ -127,10 +127,13 @@
                   </td>
                   <td>
                     <span class="badge" [ngClass]="{
-                      'badge-success': p.durum === 'NORMAL',
-                      'badge-warning': p.durum === 'ERKEN_CIKTI',
-                      'badge-danger': p.durum === 'EKSİK_KART'
-                    }">
+  'badge-success': p.durum === 'NORMAL',
+  'badge-info': p.durum === 'FAZLA_MESAI',
+  'badge-warning': p.durum === 'ERKEN_CIKTI',
+  'badge-danger': p.durum === 'EKSİK_KART'
+}">
+  {{ p.durumMetni }}
+</span>
                       {{ p.durumMetni }}
                     </span>
                   </td>

@@ -148,16 +148,36 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Otomatik Mesai ve Fazla Mesai Hesaplayıcı
   hesaplaDurum(p: Personel) {
-    if (p.girisSaati === '08:00' && p.cikisSaati === '16:00') {
+    if (!p.girisSaati || !p.cikisSaati) return;
+
+    const [girisSaat, girisDakika] = p.girisSaati.split(':').map(Number);
+    const [cikisSaat, cikisDakika] = p.cikisSaati.split(':').map(Number);
+
+    const girisToplamDakika = girisSaat * 60 + girisDakika;
+    const cikisToplamDakika = cikisSaat * 60 + cikisDakika;
+
+    // Toplam çalışılan dakika ve saat hesabı
+    const toplamDakika = cikisToplamDakika - girisToplamDakika;
+    const calisilanSaat = toplamDakika / 60;
+
+    const normalVardiyaSaati = 8; // Standart 8 saat çalışma
+
+    if (calisilanSaat > normalVardiyaSaati) {
+      const fazlaMesaiSaati = calisilanSaat - normalVardiyaSaati;
+      p.durum = 'FAZLA_MESAI';
+      p.durumMetni = `FAZLA MESAİ (${fazlaMesaiSaati} Saat)`;
+    } else if (calisilanSaat === normalVardiyaSaati) {
       p.durum = 'NORMAL';
       p.durumMetni = 'NORMAL (8 Saat)';
-    } else if (p.cikisSaati < '16:00') {
+    } else if (calisilanSaat > 0 && calisilanSaat < normalVardiyaSaati) {
+      const eksikSaat = normalVardiyaSaati - calisilanSaat;
       p.durum = 'ERKEN_CIKTI';
-      p.durumMetni = 'ERKEN ÇIKTI';
+      p.durumMetni = `ERKEN ÇIKTI (${eksikSaat} Saat Eksik)`;
     } else {
       p.durum = 'EKSİK_KART';
-      p.durumMetni = 'GİRİŞ/ÇIKIŞ FARKLI';
+      p.durumMetni = 'GEÇER SİZ SAAT';
     }
   }
 
