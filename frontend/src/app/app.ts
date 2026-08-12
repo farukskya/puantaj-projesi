@@ -70,14 +70,14 @@ export class AppComponent implements OnInit {
   personelListesi: Personel[] = [];
   aylikPuantajListesi: GunlukPuantaj[] = [];
 
-  // Personellere Özel Kaydedilmiş Günlük Veri Deposu (Simülasyon DB)
+  // Personellere Özel Kaydedilmiş Günlük Veri Deposu
   private personelAylikGecmis: { [key: string]: GunlukPuantaj[] } = {};
 
   // Mock Veri Deposu
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
       { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu' },
+      { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu' },
       { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi' },
       { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
     ],
@@ -138,6 +138,7 @@ export class AppComponent implements OnInit {
   onBolumChange() {
     if (this.secilenBolum && this.mockPersonelDeposu[this.secilenBolum]) {
       this.personelListesi = JSON.parse(JSON.stringify(this.mockPersonelDeposu[this.secilenBolum]));
+      this.personelListesi.forEach(p => this.hesaplaDurum(p));
     } else if (this.secilenBolum) {
       this.personelListesi = [
         { sicilNo: 'PER-9001', adSoyad: 'Örnek Personel 1', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
@@ -150,7 +151,11 @@ export class AppComponent implements OnInit {
 
   // Otomatik Mesai ve Fazla Mesai Hesaplayıcı
   hesaplaDurum(p: Personel) {
-    if (!p.girisSaati || !p.cikisSaati) return;
+    if (!p.girisSaati || !p.cikisSaati) {
+      p.durum = 'EKSİK_KART';
+      p.durumMetni = 'EKSİK KART';
+      return;
+    }
 
     const [girisSaat, girisDakika] = p.girisSaati.split(':').map(Number);
     const [cikisSaat, cikisDakika] = p.cikisSaati.split(':').map(Number);
@@ -158,11 +163,9 @@ export class AppComponent implements OnInit {
     const girisToplamDakika = girisSaat * 60 + girisDakika;
     const cikisToplamDakika = cikisSaat * 60 + cikisDakika;
 
-    // Toplam çalışılan dakika ve saat hesabı
     const toplamDakika = cikisToplamDakika - girisToplamDakika;
     const calisilanSaat = toplamDakika / 60;
-
-    const normalVardiyaSaati = 8; // Standart 8 saat çalışma
+    const normalVardiyaSaati = 8;
 
     if (calisilanSaat > normalVardiyaSaati) {
       const fazlaMesaiSaati = calisilanSaat - normalVardiyaSaati;
@@ -177,11 +180,11 @@ export class AppComponent implements OnInit {
       p.durumMetni = `ERKEN ÇIKTI (${eksikSaat} Saat Eksik)`;
     } else {
       p.durum = 'EKSİK_KART';
-      p.durumMetni = 'GEÇER SİZ SAAT';
+      p.durumMetni = 'EKSİK KART / GEÇERSİZ SAAT';
     }
   }
 
-  // TOPLU KAYDETME: Seçilen Tarihteki Değişiklikleri Personellerin Aylık Tablosuna İşler
+  // TOPLU KAYDETME: Tüm Durumları (Fazla Mesai, Erken Çıktı vs.) Aylık Cetvele Aktarır
   topluKaydet() {
     if (this.personelListesi.length === 0) {
       alert('Kaydedilecek personel verisi bulunamadı!');
@@ -190,8 +193,9 @@ export class AppComponent implements OnInit {
 
     this.isSaving = true;
 
-    // Her Personel İçin Seçilen Tarihteki Değerleri Aylık Depoya İşle
     this.personelListesi.forEach(p => {
+      this.hesaplaDurum(p);
+
       if (!this.personelAylikGecmis[p.sicilNo]) {
         this.generatePersonelGecmis(p.sicilNo);
       }
@@ -200,19 +204,18 @@ export class AppComponent implements OnInit {
       if (hedefGun) {
         hedefGun.girisSaati = p.girisSaati;
         hedefGun.cikisSaati = p.cikisSaati;
-        hedefGun.not = p.mazeretNotu || p.mazeretTuru;
+        
+        // Mazeret varsa önce mazeret yaz, yoksa otomatik durum metnini yaz
+        hedefGun.not = p.mazeretNotu || p.mazeretTuru || p.durumMetni;
 
         if (p.mazeretTuru) {
           hedefGun.durum = 'MAZERETLI';
-        } else if (p.durum === 'NORMAL') {
-          hedefGun.durum = 'NORMAL';
-        } else if (p.durum === 'ERKEN_CIKTI' || p.durum === 'EKSİK_KART') {
-          hedefGun.durum = 'DEVAMSIZ';
+        } else {
+          hedefGun.durum = p.durum; // FAZLA_MESAI, NORMAL, ERKEN_CIKTI, EKSİK_KART vb.
         }
       }
     });
 
-    // Varsayılan olarak listedeki ilk personeli aylık görünüm için seçili yapar
     if (this.personelListesi.length > 0) {
       this.seciliPersonel = this.personelListesi[0];
       this.aylikPuantajListesi = this.personelAylikGecmis[this.seciliPersonel.sicilNo];
@@ -221,7 +224,7 @@ export class AppComponent implements OnInit {
 
     setTimeout(() => {
       this.isSaving = false;
-      this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı başarıyla kaydedildi!`;
+      this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı ve mesaileri başarıyla kaydedildi!`;
       this.showSuccessToast = true;
 
       setTimeout(() => {
@@ -230,21 +233,26 @@ export class AppComponent implements OnInit {
     }, 500);
   }
 
-  // Kişiye Özel Aylık Detaya Gitme (Dinamik Canlı Veri İle)
+  // Kişiye Özel Aylık Detaya Gitme (Fazla Mesai Aktarımı Dahil)
   personelAylikDetayGit(p: Personel) {
     this.seciliPersonel = p;
+    this.hesaplaDurum(p);
 
     if (!this.personelAylikGecmis[p.sicilNo]) {
       this.generatePersonelGecmis(p.sicilNo);
     }
 
-    // O anki tarih seçiminde girilmiş bilgileri güncel tut
     const hedefGun = this.personelAylikGecmis[p.sicilNo].find(g => g.tarih === this.secilenTarih);
     if (hedefGun) {
       hedefGun.girisSaati = p.girisSaati;
       hedefGun.cikisSaati = p.cikisSaati;
-      hedefGun.not = p.mazeretNotu || p.mazeretTuru;
-      if (p.mazeretTuru) hedefGun.durum = 'MAZERETLI';
+      hedefGun.not = p.mazeretNotu || p.mazeretTuru || p.durumMetni;
+
+      if (p.mazeretTuru) {
+        hedefGun.durum = 'MAZERETLI';
+      } else {
+        hedefGun.durum = p.durum;
+      }
     }
 
     this.aylikPuantajListesi = this.personelAylikGecmis[p.sicilNo];
@@ -304,7 +312,7 @@ export class AppComponent implements OnInit {
     this.toplamHaftaIzni = this.aylikPuantajListesi.filter(g => g.durum === 'HAFTA_IZNI').length;
     this.toplamResmiTatil = this.aylikPuantajListesi.filter(g => g.durum === 'RESMI_TATIL').length;
     this.toplamMazeret = this.aylikPuantajListesi.filter(g => g.durum === 'MAZERETLI').length;
-    this.toplamDevamsiz = this.aylikPuantajListesi.filter(g => g.durum === 'DEVAMSIZ').length;
+    this.toplamDevamsiz = this.aylikPuantajListesi.filter(g => g.durum === 'DEVAMSIZ' || g.durum === 'ERKEN_CIKTI' || g.durum === 'EKSİK_KART').length;
   }
 
   excelIndir() {
