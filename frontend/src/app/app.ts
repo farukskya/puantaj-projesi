@@ -33,6 +33,7 @@ interface GunlukPuantaj {
   styleUrls: ['./app.scss']
 })
 export class AppComponent implements OnInit {
+  // Oturum ve Rol Durumu
   isLoggedIn: boolean = false;
   loginSicil: string = '';
   loginSifre: string = '';
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
 
   aktifSekme: 'gunluk' | 'aylik' = 'gunluk';
 
+  // Seçim Değişkenleri
   secilenTarih: string = '2026-08-12';
   secilenVardiya: string = '08:00 - 16:00';
   secilenAmir: string = '';
@@ -55,6 +57,7 @@ export class AppComponent implements OnInit {
   showSuccessToast: boolean = false;
   toastMessage: string = '';
 
+  // İK Özet Sayaçları
   toplamFiiliCalisma: number = 0;
   toplamHaftaIzni: number = 0;
   toplamResmiTatil: number = 0;
@@ -76,7 +79,7 @@ export class AppComponent implements OnInit {
 
   private personelAylikGecmis: { [key: string]: GunlukPuantaj[] } = {};
 
-  // Özel Hazırlanmış Mock Veri Deposu
+  // Mock Veri Deposu
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
       { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
@@ -91,7 +94,7 @@ export class AppComponent implements OnInit {
     this.generate30GunlukPuantaj();
   }
 
-  // LOGIN METOTLARI
+  // LOGIN / LOGOUT METOTLARI
   girisYap() {
     this.loginHata = '';
     let foundUser: Personel | null = null;
@@ -164,7 +167,12 @@ export class AppComponent implements OnInit {
     const [cikisSaat, cikisDakika] = p.cikisSaati.split(':').map(Number);
 
     const girisToplamDakika = girisSaat * 60 + girisDakika;
-    const cikisToplamDakika = cikisSaat * 60 + cikisDakika;
+    let cikisToplamDakika = cikisSaat * 60 + cikisDakika;
+
+    // Gece vardiyası (00:00 bitişi) kontrolü
+    if (cikisToplamDakika === 0 && girisToplamDakika > 0) {
+      cikisToplamDakika = 24 * 60;
+    }
 
     const calisilanDakika = cikisToplamDakika - girisToplamDakika;
     const normalVardiyaDakika = 8 * 60;
@@ -186,7 +194,30 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // HİYERARŞİ SEÇİMİ VE ZENGİN DİNAMİK PERSONEL ÜRETİMİ
+  // VARDİYA DEĞİŞTİĞİNDE LİSTEDEKİ SAATLERİ GÜNCELLE
+  onVardiyaChange() {
+    let yeniGiris = '08:00';
+    let yeniCikis = '16:00';
+
+    if (this.secilenVardiya === '16:00 - 24:00') {
+      yeniGiris = '16:00';
+      yeniCikis = '00:00';
+    } else if (this.secilenVardiya === '00:00 - 08:00') {
+      yeniGiris = '00:00';
+      yeniCikis = '08:00';
+    } else {
+      yeniGiris = '08:00';
+      yeniCikis = '16:00';
+    }
+
+    this.personelListesi.forEach(p => {
+      p.girisSaati = yeniGiris;
+      p.cikisSaati = yeniCikis;
+      this.hesaplaDurum(p);
+    });
+  }
+
+  // HİYERARŞİ SEÇİMLERİ
   onDirektorlikChange() {
     this.secilenMudurluk = '';
     this.secilenBasmuhendislik = '';
@@ -235,23 +266,37 @@ export class AppComponent implements OnInit {
   }
 
   onBolumChange() {
+    let giris = '08:00';
+    let cikis = '16:00';
+
+    if (this.secilenVardiya === '16:00 - 24:00') {
+      giris = '16:00';
+      cikis = '00:00';
+    } else if (this.secilenVardiya === '00:00 - 08:00') {
+      giris = '00:00';
+      cikis = '08:00';
+    }
+
     if (this.secilenBolum && this.mockPersonelDeposu[this.secilenBolum]) {
       this.personelListesi = JSON.parse(JSON.stringify(this.mockPersonelDeposu[this.secilenBolum]));
     } else if (this.secilenBolum) {
-      // DİNAMİK DOLDURUCU: Seçilen Her Bölüm İçin Otomatik 5 Tane Personel Üretir
       const bolumKodu = Math.floor(1000 + Math.random() * 9000);
       this.personelListesi = [
-        { sicilNo: `PER-${bolumKodu}`, adSoyad: 'Ali Öztürk', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
-        { sicilNo: `PER-${bolumKodu + 1}`, adSoyad: 'Hasan Yurt', girisSaati: '08:00', cikisSaati: '18:00', durum: 'FAZLA_MESAI', durumMetni: 'FAZLA MESAİ (2 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
-        { sicilNo: `PER-${bolumKodu + 2}`, adSoyad: 'Fatma Şahin', girisSaati: '08:00', cikisSaati: '15:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (1 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik Sevk', sifre: '1234', rol: 'ISCI' },
-        { sicilNo: `PER-${bolumKodu + 3}`, adSoyad: 'Hüseyin Arslan', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
-        { sicilNo: `PER-${bolumKodu + 4}`, adSoyad: 'Zeynep Kaya', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' }
+        { sicilNo: `PER-${bolumKodu}`, adSoyad: 'Ali Öztürk', girisSaati: giris, cikisSaati: cikis, durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
+        { sicilNo: `PER-${bolumKodu + 1}`, adSoyad: 'Hasan Yurt', girisSaati: giris, cikisSaati: cikis, durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
+        { sicilNo: `PER-${bolumKodu + 2}`, adSoyad: 'Fatma Şahin', girisSaati: giris, cikisSaati: cikis, durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
+        { sicilNo: `PER-${bolumKodu + 3}`, adSoyad: 'Hüseyin Arslan', girisSaati: giris, cikisSaati: cikis, durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
+        { sicilNo: `PER-${bolumKodu + 4}`, adSoyad: 'Zeynep Kaya', girisSaati: giris, cikisSaati: cikis, durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' }
       ];
     } else {
       this.personelListesi = [];
     }
 
-    this.personelListesi.forEach(p => this.hesaplaDurum(p));
+    this.personelListesi.forEach(p => {
+      p.girisSaati = giris;
+      p.cikisSaati = cikis;
+      this.hesaplaDurum(p);
+    });
   }
 
   topluKaydet() {
@@ -369,7 +414,8 @@ export class AppComponent implements OnInit {
       if (g.girisSaati && g.cikisSaati && g.girisSaati !== '-' && g.cikisSaati !== '-') {
         const [gS, gD] = g.girisSaati.split(':').map(Number);
         const [cS, cD] = g.cikisSaati.split(':').map(Number);
-        const dk = (cS * 60 + cD) - (gS * 60 + gD);
+        let dk = (cS * 60 + cD) - (gS * 60 + gD);
+        if (dk < 0 && cS === 0) dk += 24 * 60; // Gece vardiyası devri
         if (dk > 0) toplamDakika += dk;
       }
     });
