@@ -70,6 +70,9 @@ export class AppComponent implements OnInit {
   personelListesi: Personel[] = [];
   aylikPuantajListesi: GunlukPuantaj[] = [];
 
+  // Personellere Özel Kaydedilmiş Günlük Veri Deposu (Simülasyon DB)
+  private personelAylikGecmis: { [key: string]: GunlukPuantaj[] } = {};
+
   // Mock Veri Deposu
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
@@ -85,8 +88,8 @@ export class AppComponent implements OnInit {
   };
 
   ngOnInit() {
+    // İlk Açılışta Varsayılan Liste Oluştur
     this.generate30GunlukPuantaj();
-    this.aylikOzetHesapla();
   }
 
   // Hiyerarşik Seçim Olayları
@@ -127,7 +130,7 @@ export class AppComponent implements OnInit {
     this.personelListesi = [];
 
     if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
-      this.bolumler = ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
+      this.bolumler = ['Puantaj me İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
     } else {
       this.bolumler = ['Standart Çalışma Birimi'];
     }
@@ -159,7 +162,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Takılma Sorunu Düzeltilen Kaydetme Metodu
+  // TOPLU KAYDETME: Seçilen Tarihteki Değişiklikleri Personellerin Aylık Tablosuna İşler
   topluKaydet() {
     if (this.personelListesi.length === 0) {
       alert('Kaydedilecek personel verisi bulunamadı!');
@@ -168,7 +171,28 @@ export class AppComponent implements OnInit {
 
     this.isSaving = true;
 
-    // 600ms sonra kaydetmeyi tamamlayıp toast bildirimini açar
+    // Her Personel İçin Seçilen Tarihteki Değerleri Aylık Depoya İşle
+    this.personelListesi.forEach(p => {
+      if (!this.personelAylikGecmis[p.sicilNo]) {
+        this.generatePersonelGecmis(p.sicilNo);
+      }
+
+      const hedefGun = this.personelAylikGecmis[p.sicilNo].find(g => g.tarih === this.secilenTarih);
+      if (hedefGun) {
+        hedefGun.girisSaati = p.girisSaati;
+        hedefGun.cikisSaati = p.cikisSaati;
+        hedefGun.not = p.mazeretNotu || p.mazeretTuru;
+
+        if (p.mazeretTuru) {
+          hedefGun.durum = 'MAZERETLI';
+        } else if (p.durum === 'NORMAL') {
+          hedefGun.durum = 'NORMAL';
+        } else if (p.durum === 'ERKEN_CIKTI' || p.durum === 'EKSİK_KART') {
+          hedefGun.durum = 'DEVAMSIZ';
+        }
+      }
+    });
+
     setTimeout(() => {
       this.isSaving = false;
       this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı başarıyla kaydedildi!`;
@@ -177,19 +201,44 @@ export class AppComponent implements OnInit {
       setTimeout(() => {
         this.showSuccessToast = false;
       }, 3500);
-    }, 600);
+    }, 500);
   }
 
-  // Kişiye Özel Aylık Detaya Gitme Metodu
+  // Kişiye Özel Aylık Detaya Gitme (Dinamik Canlı Veri İle)
   personelAylikDetayGit(p: Personel) {
     this.seciliPersonel = p;
-    this.generate30GunlukPuantaj();
+
+    if (!this.personelAylikGecmis[p.sicilNo]) {
+      this.generatePersonelGecmis(p.sicilNo);
+    }
+
+    // O anki tarih seçiminde girilmiş bilgileri güncel tut
+    const hedefGun = this.personelAylikGecmis[p.sicilNo].find(g => g.tarih === this.secilenTarih);
+    if (hedefGun) {
+      hedefGun.girisSaati = p.girisSaati;
+      hedefGun.cikisSaati = p.cikisSaati;
+      hedefGun.not = p.mazeretNotu || p.mazeretTuru;
+      if (p.mazeretTuru) hedefGun.durum = 'MAZERETLI';
+    }
+
+    this.aylikPuantajListesi = this.personelAylikGecmis[p.sicilNo];
+    this.aylikOzetHesapla();
     this.aktifSekme = 'aylik';
   }
 
+  // Varsayılan 30 Günlük Şablon Oluşturucu
   generate30GunlukPuantaj() {
+    this.aylikPuantajListesi = this.createBase30Gun();
+    this.aylikOzetHesapla();
+  }
+
+  private generatePersonelGecmis(sicilNo: string) {
+    this.personelAylikGecmis[sicilNo] = this.createBase30Gun();
+  }
+
+  private createBase30Gun(): GunlukPuantaj[] {
     const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-    this.aylikPuantajListesi = [];
+    const liste: GunlukPuantaj[] = [];
 
     for (let i = 1; i <= 30; i++) {
       const gunIndex = (i + 4) % 7;
@@ -203,16 +252,6 @@ export class AppComponent implements OnInit {
         durum = 'HAFTA_IZNI';
         giris = '-';
         cikis = '-';
-      } else if (i === 12) {
-        durum = 'MAZERETLI';
-        giris = '08:00';
-        cikis = '14:00';
-        not = 'Doktor Sevk / Poliklinik';
-      } else if (i === 20) {
-        durum = 'FAZLA_MESAI';
-        giris = '08:00';
-        cikis = '18:00';
-        not = 'Saha Mesaisi';
       } else if (i === 30) {
         durum = 'RESMI_TATIL';
         giris = '-';
@@ -220,7 +259,7 @@ export class AppComponent implements OnInit {
         not = '30 Ağustos Zafer Bayramı';
       }
 
-      this.aylikPuantajListesi.push({
+      liste.push({
         tarih: `2026-08-${i < 10 ? '0' + i : i}`,
         gunAdi: gunAdi,
         durum: durum,
@@ -230,7 +269,7 @@ export class AppComponent implements OnInit {
       });
     }
 
-    this.aylikOzetHesapla();
+    return liste;
   }
 
   aylikOzetHesapla() {
@@ -247,7 +286,7 @@ export class AppComponent implements OnInit {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.aylikPuantajListesi);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Aylık Puantaj');
-    const isim = this.seciliPersonel ? this.seciliPersonel.adSoyad.replace(' ', '_') : 'Genel';
+    const isim = this.seciliPersonel ? this.seciliPersonel.adSoyad.replace(/\s+/g, '_') : 'Genel';
     XLSX.writeFile(wb, `Puantaj_${isim}_2026_08.xlsx`);
   }
 }
