@@ -1,5 +1,5 @@
-<!-- 1. GİRİŞ YAPILMAMIŞSA: LOGIN EKRANI -->
-<div class="login-wrapper" *ngIf="!isLoggedIn">
+<!-- LOGIN EKRANI -->
+<div class="login-wrapper" *ngIf="!isLoggedIn" [class.dark-theme]="isDarkMode">
   <div class="login-card">
     <div class="login-header">
       <span class="brand-icon">🏢</span>
@@ -23,16 +23,15 @@
   </div>
 </div>
 
-<!-- 2. GİRİŞ YAPILMIŞSA: UYGULAMA ARAYÜZÜ -->
-<div class="layout-wrapper" *ngIf="isLoggedIn">
-  <!-- Sol Menü (Sidebar) -->
+<!-- UYGULAMA ARAYÜZÜ -->
+<div class="layout-wrapper" *ngIf="isLoggedIn" [class.dark-theme]="isDarkMode">
+  <!-- Sol Menü -->
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-icon">🏢</span>
       <span class="brand-title">Puantaj Portal</span>
     </div>
 
-    <!-- Kullanıcı Kartı -->
     <div class="user-info-box" *ngIf="currentUser">
       <span class="user-role-badge" [ngClass]="currentUser.rol === 'ADMIN' ? 'role-admin' : 'role-isci'">
         {{ currentUser.rol === 'ADMIN' ? 'YÖNETİCİ' : 'İŞÇİ' }}
@@ -48,19 +47,24 @@
       <button class="nav-item" [class.active]="aktifSekme === 'aylik'" (click)="aktifSekme = 'aylik'">
         📊 30 Günlük İK Cetveli
       </button>
+      <button class="nav-item" [class.active]="aktifSekme === 'profil'" (click)="aktifSekme = 'profil'">
+        👤 Profilim
+      </button>
+      <button class="nav-item btn-theme-toggle" (click)="toggleDarkMode()">
+        {{ isDarkMode ? '☀️ Aydınlık Mod' : '🌙 Koyu Mod' }}
+      </button>
       <button class="nav-item btn-logout" (click)="cikisYap()">
         🚪 Güvenli Çıkış
       </button>
     </nav>
   </aside>
 
-  <!-- Ana İçerik Alanı -->
+  <!-- Ana İçerik -->
   <main class="content-area">
 
-    <!-- 1. SEKME: GÜNLÜK PUANTAJ GİRİŞİ (Sadece ADMIN Görebilir) -->
+    <!-- 1. GÜNLÜK PUANTAJ (ADMIN) -->
     <div *ngIf="aktifSekme === 'gunluk' && currentUser?.rol === 'ADMIN'">
       
-      <!-- Organizasyon ve Vardiya Seçim Kartı -->
       <div class="card">
         <div class="card-header">
           <h3>⚙️ Vardiya & Organizasyon Bilgileri</h3>
@@ -72,13 +76,13 @@
               <input type="date" class="form-control" [(ngModel)]="secilenTarih" />
             </div>
             <div class="form-group">
-  <label>VARDİYA TİPİ (PLANLANAN)*</label>
-  <select class="form-control" [(ngModel)]="secilenVardiya" (change)="onVardiyaChange()">
-    <option value="08:00 - 16:00">08:00 - 16:00 Vardiyası (Gündüz)</option>
-    <option value="16:00 - 24:00">16:00 - 24:00 Vardiyası (Akşam)</option>
-    <option value="00:00 - 08:00">00:00 - 08:00 Vardiyası (Gece)</option>
-  </select>
-</div>
+              <label>VARDİYA TİPİ (PLANLANAN)*</label>
+              <select class="form-control" [(ngModel)]="secilenVardiya" (change)="onVardiyaChange()">
+                <option value="08:00 - 16:00">08:00 - 16:00 Vardiyası (Gündüz)</option>
+                <option value="16:00 - 24:00">16:00 - 24:00 Vardiyası (Akşam)</option>
+                <option value="00:00 - 08:00">00:00 - 08:00 Vardiyası (Gece)</option>
+              </select>
+            </div>
             <div class="form-group">
               <label>BÖLÜM SORUMLUSU (AMİR)*</label>
               <select class="form-control" [(ngModel)]="secilenAmir">
@@ -133,10 +137,18 @@
       <div class="card">
         <div class="card-header card-header-flex">
           <h3>👥 Bölüm Çalışanları ve Puantaj Durumları</h3>
-          <button class="btn-navy" (click)="topluKaydet()" [disabled]="isSaving || personelListesi.length === 0">
-            <span *ngIf="!isSaving">💾 Puantajı Toplu Kaydet</span>
-            <span *ngIf="isSaving">⏳ Kaydediliyor...</span>
-          </button>
+          
+          <div class="header-actions">
+            <!-- Arama Kutusu -->
+            <div class="search-box">
+              <input type="text" class="form-control-search" [(ngModel)]="aramaMetni" placeholder="🔍 Personel ara (Ad/Sicil)..." />
+            </div>
+
+            <button class="btn-navy" (click)="topluKaydet()" [disabled]="isSaving || personelListesi.length === 0">
+              <span *ngIf="!isSaving">💾 Puantajı Toplu Kaydet</span>
+              <span *ngIf="isSaving">⏳ Kaydediliyor...</span>
+            </button>
+          </div>
         </div>
 
         <div class="card-body">
@@ -155,7 +167,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let p of personelListesi">
+                <tr *ngFor="let p of filtrelenmisPersoneller">
                   <td><strong>{{ p.sicilNo }}</strong></td>
                   <td>{{ p.adSoyad }}</td>
                   <td>
@@ -193,9 +205,9 @@
                     </button>
                   </td>
                 </tr>
-                <tr *ngIf="personelListesi.length === 0">
+                <tr *ngIf="filtrelenmisPersoneller.length === 0">
                   <td colspan="8" class="text-center text-muted py-4">
-                    Lütfen yukarıdan Organizasyon ve Bölüm seçiniz.
+                    Aranan kriterlere uygun personel bulunamadı.
                   </td>
                 </tr>
               </tbody>
@@ -205,10 +217,8 @@
       </div>
     </div>
 
-    <!-- 2. SEKME: 30 GÜNLÜK İK PUANTAJ CETVELİ (TÜM ROLER GÖREBİLİR) -->
+    <!-- 2. 30 GÜNLÜK CETVEL -->
     <div *ngIf="aktifSekme === 'aylik'">
-      
-      <!-- İK Özet Sayaç Kartları -->
       <div class="ik-summary-cards">
         <div class="summary-card purple">
           <span class="count">{{ toplamCalisilanSaatMetni }}</span>
@@ -232,7 +242,6 @@
         </div>
       </div>
 
-      <!-- 30 Günlük Hareket Tablosu -->
       <div class="card">
         <div class="card-header card-header-flex">
           <h3>
@@ -292,6 +301,30 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PROFİL DÜZENLEME EKRANI -->
+    <div *ngIf="aktifSekme === 'profil'">
+      <div class="card max-w-600">
+        <div class="card-header">
+          <h3>👤 Profil ve Güvenlik Ayarları</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group mb-3">
+            <label>SİCİL NUMARASI (DEĞİŞTİRİLEMEZ)</label>
+            <input type="text" class="form-control" [value]="currentUser?.sicilNo" disabled />
+          </div>
+          <div class="form-group mb-3">
+            <label>AD SOYAD</label>
+            <input type="text" class="form-control" [(ngModel)]="profilAdSoyad" />
+          </div>
+          <div class="form-group mb-3">
+            <label>GİRİŞ ŞİFRESİ</label>
+            <input type="password" class="form-control" [(ngModel)]="profilSifre" />
+          </div>
+          <button class="btn-navy w-100 mt-2" (click)="profilKaydet()">💾 Değişiklikleri Kaydet</button>
         </div>
       </div>
     </div>

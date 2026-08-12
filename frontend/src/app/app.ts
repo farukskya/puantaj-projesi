@@ -33,16 +33,21 @@ interface GunlukPuantaj {
   styleUrls: ['./app.scss']
 })
 export class AppComponent implements OnInit {
-  // Oturum ve Rol Durumu
   isLoggedIn: boolean = false;
   loginSicil: string = '';
   loginSifre: string = '';
   loginHata: string = '';
   currentUser: Personel | null = null;
 
-  aktifSekme: 'gunluk' | 'aylik' = 'gunluk';
+  isDarkMode: boolean = false;
+  aramaMetni: string = '';
 
-  // Seçim Değişkenleri
+  aktifSekme: 'gunluk' | 'aylik' | 'profil' = 'gunluk';
+
+  // Profil Düzenleme Modeli
+  profilAdSoyad: string = '';
+  profilSifre: string = '';
+
   secilenTarih: string = '2026-08-12';
   secilenVardiya: string = '08:00 - 16:00';
   secilenAmir: string = '';
@@ -57,7 +62,6 @@ export class AppComponent implements OnInit {
   showSuccessToast: boolean = false;
   toastMessage: string = '';
 
-  // İK Özet Sayaçları
   toplamFiiliCalisma: number = 0;
   toplamHaftaIzni: number = 0;
   toplamResmiTatil: number = 0;
@@ -79,14 +83,12 @@ export class AppComponent implements OnInit {
 
   private personelAylikGecmis: { [key: string]: GunlukPuantaj[] } = {};
 
-  // Mock Veri Deposu
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
       { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
       { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu', sifre: '1234', rol: 'ISCI' },
       { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi', sifre: '1234', rol: 'ISCI' },
-      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
-      { sicilNo: 'PER-1150', adSoyad: 'Caner Şahin', girisSaati: '08:00', cikisSaati: '18:00', durum: 'FAZLA_MESAI', durumMetni: 'FAZLA MESAİ (2 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' }
+      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' }
     ]
   };
 
@@ -94,7 +96,19 @@ export class AppComponent implements OnInit {
     this.generate30GunlukPuantaj();
   }
 
-  // LOGIN / LOGOUT METOTLARI
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+  }
+
+  // Anlık Personel Filtreleyici
+  get filtrelenmisPersoneller(): Personel[] {
+    if (!this.aramaMetni.trim()) return this.personelListesi;
+    const q = this.aramaMetni.toLowerCase().trim();
+    return this.personelListesi.filter(p => 
+      p.adSoyad.toLowerCase().includes(q) || p.sicilNo.toLowerCase().includes(q)
+    );
+  }
+
   girisYap() {
     this.loginHata = '';
     let foundUser: Personel | null = null;
@@ -121,6 +135,8 @@ export class AppComponent implements OnInit {
 
     if (foundUser && (this.loginSifre === (foundUser as Personel).sifre || this.loginSifre === '1234')) {
       this.currentUser = foundUser;
+      this.profilAdSoyad = this.currentUser.adSoyad;
+      this.profilSifre = this.currentUser.sifre || '1234';
       this.isLoggedIn = true;
 
       if (this.currentUser.rol === 'ISCI') {
@@ -146,10 +162,19 @@ export class AppComponent implements OnInit {
     this.loginSifre = '';
   }
 
+  profilKaydet() {
+    if (this.currentUser) {
+      this.currentUser.adSoyad = this.profilAdSoyad;
+      this.currentUser.sifre = this.profilSifre;
+      this.toastMessage = 'Profil bilgileriniz başarıyla güncellendi!';
+      this.showSuccessToast = true;
+      setTimeout(() => this.showSuccessToast = false, 3000);
+    }
+  }
+
   private dakikaFormatla(toplamDakika: number): string {
     const saat = Math.floor(Math.abs(toplamDakika) / 60);
     const dakika = Math.round(Math.abs(toplamDakika) % 60);
-    
     let metin = '';
     if (saat > 0) metin += `${saat} Saat `;
     if (dakika > 0 || saat === 0) metin += `${dakika} Dakika`;
@@ -169,7 +194,6 @@ export class AppComponent implements OnInit {
     const girisToplamDakika = girisSaat * 60 + girisDakika;
     let cikisToplamDakika = cikisSaat * 60 + cikisDakika;
 
-    // Gece vardiyası (00:00 bitişi) kontrolü
     if (cikisToplamDakika === 0 && girisToplamDakika > 0) {
       cikisToplamDakika = 24 * 60;
     }
@@ -194,15 +218,14 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // VARDİYA DEĞİŞTİĞİNDE LİSTEDEKİ SAATLERİ GÜNCELLE
   onVardiyaChange() {
     let yeniGiris = '08:00';
     let yeniCikis = '16:00';
 
-    if (this.secilenVardiya === '16:00 - 24:00') {
+    if (this.secilenVardiya.includes('16:00 - 24:00')) {
       yeniGiris = '16:00';
       yeniCikis = '00:00';
-    } else if (this.secilenVardiya === '00:00 - 08:00') {
+    } else if (this.secilenVardiya.includes('00:00 - 08:00')) {
       yeniGiris = '00:00';
       yeniCikis = '08:00';
     } else {
@@ -210,14 +233,15 @@ export class AppComponent implements OnInit {
       yeniCikis = '16:00';
     }
 
-    this.personelListesi.forEach(p => {
-      p.girisSaati = yeniGiris;
-      p.cikisSaati = yeniCikis;
-      this.hesaplaDurum(p);
-    });
+    if (this.personelListesi && this.personelListesi.length > 0) {
+      this.personelListesi.forEach(p => {
+        p.girisSaati = yeniGiris;
+        p.cikisSaati = yeniCikis;
+        this.hesaplaDurum(p);
+      });
+    }
   }
 
-  // HİYERARŞİ SEÇİMLERİ
   onDirektorlikChange() {
     this.secilenMudurluk = '';
     this.secilenBasmuhendislik = '';
@@ -269,10 +293,10 @@ export class AppComponent implements OnInit {
     let giris = '08:00';
     let cikis = '16:00';
 
-    if (this.secilenVardiya === '16:00 - 24:00') {
+    if (this.secilenVardiya.includes('16:00 - 24:00')) {
       giris = '16:00';
       cikis = '00:00';
-    } else if (this.secilenVardiya === '00:00 - 08:00') {
+    } else if (this.secilenVardiya.includes('00:00 - 08:00')) {
       giris = '00:00';
       cikis = '08:00';
     }
@@ -415,7 +439,7 @@ export class AppComponent implements OnInit {
         const [gS, gD] = g.girisSaati.split(':').map(Number);
         const [cS, cD] = g.cikisSaati.split(':').map(Number);
         let dk = (cS * 60 + cD) - (gS * 60 + gD);
-        if (dk < 0 && cS === 0) dk += 24 * 60; // Gece vardiyası devri
+        if (dk < 0 && cS === 0) dk += 24 * 60;
         if (dk > 0) toplamDakika += dk;
       }
     });
