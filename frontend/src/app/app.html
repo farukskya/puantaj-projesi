@@ -127,13 +127,11 @@
                   </td>
                   <td>
                     <span class="badge" [ngClass]="{
-  'badge-success': p.durum === 'NORMAL',
-  'badge-info': p.durum === 'FAZLA_MESAI',
-  'badge-warning': p.durum === 'ERKEN_CIKTI',
-  'badge-danger': p.durum === 'EKSİK_KART'
-}">
-  {{ p.durumMetni }}
-</span>
+                      'badge-success': p.durum === 'NORMAL',
+                      'badge-info': p.durum === 'FAZLA_MESAI',
+                      'badge-warning': p.durum === 'ERKEN_CIKTI',
+                      'badge-danger': p.durum === 'EKSİK_KART'
+                    }">
                       {{ p.durumMetni }}
                     </span>
                   </td>
@@ -228,7 +226,6 @@
                   'row-holiday': gun.durum === 'RESMI_TATIL'
                 }">
                   <td><strong>{{ gun.tarih }}</strong></td>
-                  <!-- İsim Kolonu -->
                   <td><strong>{{ seciliPersonel ? seciliPersonel.adSoyad : 'Genel Personel' }}</strong></td>
                   <td>{{ gun.gunAdi }}</td>
                   <td>
