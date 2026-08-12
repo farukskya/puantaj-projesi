@@ -1,188 +1,206 @@
-:host {
-  display: block;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #ebf0f5;
-  color: #334155;
-  font-size: 13px;
+/* ==========================================
+   GENEL TEMEL STİLLER (KARDEMİR TEMASI)
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+body {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+/* ==========================================
+   LAYOUT & SIDEBAR (SOL MENÜ DÜZENİ)
+   ========================================== */
 .layout-wrapper {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
-/* Navbar */
-.topbar {
-  background-color: #1e293b;
+.sidebar {
+  width: 260px;
+  background-color: #0f172a; /* Koyu Lacivert */
   color: #ffffff;
-  height: 48px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex-shrink: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
 
-  .logo-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    color: #38bdf8;
+  .brand-icon {
+    font-size: 1.5rem;
   }
 }
 
-.main-wrapper {
-  display: flex;
-  flex: 1;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background-color: #ffffff;
-  border-right: 1px solid #cbd5e1;
-  padding: 16px 12px;
+.nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 8px;
+}
 
-  .search-box input {
-    width: 92%;
-    padding: 6px 10px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 12px;
+.nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &:hover {
+    background-color: #1e293b;
+    color: #f8fafc;
   }
 
-  .menu-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    .menu-title {
-      font-size: 10px;
-      font-weight: 700;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-
-    .menu-item {
-      text-decoration: none;
-      color: #475569;
-      padding: 6px 8px;
-      border-radius: 4px;
-
-      &:hover, &.active {
-        background-color: #f1f5f9;
-        color: #0284c7;
-        font-weight: 600;
-      }
-    }
-  }
-
-  .sidebar-bottom {
-    margin-top: auto;
-    .logout-btn {
-      color: #ef4444;
-      text-decoration: none;
-      font-weight: 600;
-    }
+  &.active {
+    background-color: #2563eb; /* Aktif Mavi */
+    color: #ffffff;
+    font-weight: 600;
   }
 }
 
-/* Content Area */
+/* ==========================================
+   ANA İÇERİK ALANI VE KARTLAR
+   ========================================== */
 .content-area {
   flex: 1;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  .page-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
-  }
+  padding: 24px;
+  background-color: #f8fafc;
+  overflow-y: auto;
 }
 
-/* Card */
 .card {
   background: #ffffff;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  overflow: hidden;
 
-  .card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
+  .card-header {
+    padding: 18px 24px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
 
     h3 {
-      margin: 0;
-      font-size: 14px;
-      color: #1e293b;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f172a;
     }
+
+    &.card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .card-body {
+    padding: 24px;
   }
 }
 
-/* Form Grid */
+/* ==========================================
+   FORM GRID & INPUT STİLLERİ
+   ========================================== */
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 
   label {
-    font-size: 10px;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #64748b;
-  }
-
-  input, select {
-    padding: 6px 10px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 12px;
-    outline: none;
-
-    &:focus {
-      border-color: #0284c7;
-    }
+    letter-spacing: 0.5px;
   }
 }
 
-.card-header-flex {
+.form-control, .form-control-sm {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background-color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.form-control-sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.divider {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-}
+  margin: 20px 0;
+  text-align: center;
 
-.btn-navy {
-  background-color: #1e3a8a;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+  }
 
-  &:hover {
-    background-color: #1d4ed8;
+  span {
+    padding: 0 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 1px;
   }
 }
 
-/* Tablo Stilleri */
+/* ==========================================
+   TABLO STİLLERİ
+   ========================================== */
 .table-responsive {
+  width: 100%;
   overflow-x: auto;
 }
 
@@ -190,174 +208,143 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  font-size: 0.875rem;
 
   th {
-    background: #f8fafc;
+    background-color: #f8fafc;
     color: #475569;
-    padding: 10px 12px;
-    font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
+    padding: 12px 16px;
     border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
   }
 
   td {
-    padding: 8px 12px;
+    padding: 12px 16px;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
+    color: #334155;
   }
 
-  .font-bold {
-    font-weight: 700;
+  tr.row-sunday {
+    background-color: #fef2f2; /* Pazar günleri hafif kırmızı */
   }
 
-  .table-input {
-    padding: 4px 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 12px;
-    width: 90%;
+  tr.row-holiday {
+    background-color: #f0fdf4; /* Tatil günleri hafif yeşil */
   }
 }
 
-/* Status Badges */
+/* Rozetler (Badges) */
 .badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 700;
   display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
 
-  &.status-success {
-    background: #dcfce7;
+  &.badge-success {
+    background-color: #dcfce7;
     color: #15803d;
   }
-
-  &.status-warning {
-    background: #fef9c3;
+  &.badge-warning {
+    background-color: #fef9c3;
     color: #a16207;
   }
-
-  &.status-danger {
-    background: #ffebee;
-    color: #c62828;
+  &.badge-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
   }
 }
-.badge.status-neutral {
-  background: #f1f5f9;
-  color: #64748b;
-}
-.section-divider {
-  width: 100%;
-  text-align: center;
-  border-bottom: 1px solid #e2e8f0;
-  line-height: 0.1em;
-  margin: 20px 0 16px 0;
 
-  span {
-    background: #ffffff;
-    padding: 0 12px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #94a3b8;
-    letter-spacing: 0.5px;
-  }
-}
 /* ==========================================
-   MOBİL VE TABLET RESPONSIVE UYUMLULUK KODLARI
+   BUTONLAR
    ========================================== */
+.btn-navy {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 
-/* Genel Responsive Koruması */
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
+  &:hover {
+    background-color: #1e40af;
+  }
+
+  &:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+  }
 }
 
-.layout-wrapper, .main-wrapper, .content-area {
-  max-width: 100%;
-  box-sizing: border-box;
+.btn-green {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #059669;
+  }
 }
 
-/* Mobil Ekranlar İçin (768px ve Altı) */
-@media (max-width: 768px) {
-  
-  /* Ana Yerleşim Düzeni */
-  .main-wrapper {
-    flex-direction: column;
+/* ==========================================
+   İK ÖZET KARTLARI (30 GÜNLÜK TABLO ÜSTÜ)
+   ========================================== */
+.ik-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .count {
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 
-  /* Sol Sidebar Menüyü Mobilde Düzenle */
-  .sidebar {
-    width: 100% !important;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 12px;
+  .label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 4px;
   }
 
-  /* İçerik Alanı Ve Kartlar */
-  .content-area {
-    padding: 12px !important;
-    width: 100% !important;
-    overflow-x: hidden;
-  }
+  &.blue .count { color: #2563eb; }
+  &.gray .count { color: #64748b; }
+  &.green .count { color: #10b981; }
+  &.orange .count { color: #f59e0b; }
+  &.red .count { color: #ef4444; }
+}
 
-  .card {
-    padding: 16px !important;
-    margin-bottom: 16px !important;
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  /* Form Alanlarını Üst Üste Hizala */
-  .form-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-  }
-
-  .form-group {
-    width: 100% !important;
-  }
-
-  .form-group input, 
-  .form-group select {
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  /* Tabloların Ekrandan Taşmasını Engelleyen Yatay Kaydırma */
-  .table-responsive {
-    width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-  }
-
-  .custom-table {
-    min-width: 650px; /* Tablo içeriğinin ezilmesini önler, kaydırılabilir yapar */
-  }
-
-  /* İK Özet Kartları Mobilde Grid Yap */
-  .ik-summary-cards {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-  }
-
-  .summary-card {
-    width: 100% !important;
-  }
-
-  /* Başlık ve Buton Hizalamaları */
-  .card-header-flex {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-  }
-
-  .btn-navy {
-    width: 100% !important;
-    justify-content: center;
-  }
+/* ==========================================
+   TOAST BİLDİRİMİ
+   ========================================== */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #10b981;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
 }
