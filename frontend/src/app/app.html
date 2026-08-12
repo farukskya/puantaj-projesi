@@ -1,0 +1,297 @@
+<div class="layout-wrapper">
+  <!-- Üst Bar (Navbar) -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo-box">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">OTOMATİK VARDİYA & PUANTAJ PORTALI</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="user-name">Sistem Sorumlusu</span>
+      <span class="user-avatar">👤</span>
+    </div>
+  </header>
+
+  <div class="main-wrapper">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="sidebar">
+      <div class="search-box">
+        <input type="text" placeholder="Q Ara..." />
+      </div>
+
+      <div class="menu-group">
+        <span class="menu-title">PUANTAJ & VARDİYA</span>
+        <a href="javascript:void(0)" class="menu-item" [ngClass]="{'active': aktifSekme === 'gunluk'}" (click)="sekmeDegistir('gunluk')">📋 Günlük Puantaj</a>
+        <a href="javascript:void(0)" class="menu-item" [ngClass]="{'active': aktifSekme === 'aylik'}" (click)="sekmeDegistir('aylik')">📅 Aylık Puantaj Dökümü</a>
+      </div>
+
+    
+      <div class="sidebar-bottom">
+        <a href="javascript:void(0)" class="logout-btn">🚪 Çıkış Yap</a>
+      </div>
+    </aside>
+
+    <!-- Orta İçerik Alanı -->
+    <main class="content-area">
+
+      <!-- SAYFA 1: GÜNLÜK PUANTAJ GİRİŞİ -->
+      <ng-container *ngIf="aktifSekme === 'gunluk'">
+        <div class="page-header">
+          <h2>Bölüm Bazlı Puantaj ve Mazeret Girişi</h2>
+        </div>
+
+        <!-- 1. KISIM: TEMEL BİLGİLER VE ORGANİZASYON SEÇİMİ -->
+        <section class="card filter-card">
+          <div class="card-title">
+            <span>📅</span>
+            <h3>Temel Vardiya & Organizasyon Bilgileri</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>VARDİYA TARİHİ*</label>
+              <input type="date" [(ngModel)]="secilenTarih" name="secilenTarih" />
+            </div>
+
+            <div class="form-group">
+              <label>VARDİYA TİPİ (PLANLANAN)*</label>
+              <select [(ngModel)]="genelPlanlananVardiya" (change)="onVardiyaTipiChange()">
+                <option value="08:00-16:00">08:00 - 16:00 Vardiyası</option>
+                <option value="16:00-24:00">16:00 - 24:00 Vardiyası</option>
+                <option value="24:00-08:00">24:00 - 08:00 Vardiyası</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>VARDİYA SORUMLUSU (AMİR)*</label>
+              <select [(ngModel)]="secilenAmir">
+                <option value="">Amir Seçiniz...</option>
+                <option *ngFor="let a of amirler" [value]="a.sicilNo">{{a.sicilNo}} - {{a.adSoyad}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-divider">
+            <span>ORGANİZASYON HİYERARŞİSİ</span>
+          </div>
+
+         <!-- Alt Sıra: Kademeli Organizasyon Seçimi (Disabled Yapısıyla) -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>DİREKTÖRLÜK*</label>
+              <select [(ngModel)]="secilenDirektorlik" (change)="onDirektorlikChange()">
+                <option value="">Seçiniz...</option>
+                <option *ngFor="let d of direktorlikler" [value]="d.id">{{d.ad}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>MÜDÜRLÜK*</label>
+              <select [(ngModel)]="secilenMudurluk" (change)="onMudurlukChange()" [disabled]="!secilenDirektorlik">
+                <option value="">Seçiniz...</option>
+                <option *ngFor="let m of mudurlukler" [value]="m.id">{{m.ad}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>BAŞMÜHENDİSLİK*</label>
+              <select [(ngModel)]="secilenBasmuhendislik" (change)="onBasmuhendislikChange()" [disabled]="!secilenMudurluk">
+                <option value="">Seçiniz...</option>
+                <option *ngFor="let b of basmuhendislikler" [value]="b.id">{{b.ad}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>BÖLÜM (İŞ YERİ)*</label>
+              <select [(ngModel)]="secilenBolum" (change)="onBolumChange()" [disabled]="!secilenBasmuhendislik">
+                <option value="">Seçiniz...</option>
+                <option *ngFor="let bol of bolumler" [value]="bol.id">{{bol.ad}}</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. KISIM: PUANTAJ TABLOSU -->
+        <section class="card table-card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <span>👥</span>
+              <h3>Bölüm Çalışanları ve Puantaj Durumları</h3>
+            </div>
+            <button class="btn-navy" (click)="topluKaydet()">💾 Puantajı Toplu Kaydet</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Sicil No</th>
+                  <th>Ad Soyad</th>
+                  <th>Giriş Saati</th>
+                  <th>Çıkış Saati</th>
+                  <th>Otomatik Durum</th>
+                  <th>Mazeret Türü (Erken Çıkış/İzin)</th>
+                  <th>Mazeret / Vardiya Notu</th>
+                  <th>İK İşlemi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of personelListesi">
+                  <td class="font-bold">{{p.sicilNo}}</td>
+                  <td>{{p.adSoyad}}</td>
+                  <td>
+                    <input type="time" [(ngModel)]="p.girisSaati" (change)="hesaplaDurum(p)" class="table-input" />
+                  </td>
+                  <td>
+                    <input type="time" [(ngModel)]="p.cikisSaati" (change)="hesaplaDurum(p)" class="table-input" />
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'status-success': p.otomatikDurum?.includes('NORMAL'),
+                      'status-warning': p.otomatikDurum?.includes('ERKEN') || p.otomatikDurum?.includes('MESAİ'),
+                      'status-danger': p.otomatikDurum?.includes('DEVAMSIZ') || p.otomatikDurum?.includes('EKSİK'),
+                      'status-neutral': !p.otomatikDurum
+                    }">
+                      {{p.otomatikDurum}}
+                    </span>
+                  </td>
+                  <td>
+                    <select [(ngModel)]="p.mazeretTuru" class="table-input mazeret-select" [disabled]="!p.otomatikDurum?.includes('ERKEN') && !p.otomatikDurum?.includes('DEVAMSIZ')">
+                      <option value="">Mazeret Yok / Normal</option>
+                      <option value="DOKTOR_SEVK">🏥 Doktor Muayenesi / Sevk</option>
+                      <option value="IDARI_IZIN">📜 İdari İzinli</option>
+                      <option value="SAHSI_IZIN">👤 Şahsi İzin (Saatlik)</option>
+                      <option value="SAHA_GOREVI">🚚 Saha Görevi / Dış Görev</option>
+                      <option value="IS_KAZASI">⚠️ İş Kazası / Rahatsızlanma</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" [(ngModel)]="p.mazeretAciklamasi" placeholder="Örn: Poliklinik kağıdı var" class="table-input" />
+                  </td>
+                  <td>
+                    <button class="btn-sm btn-ik" (click)="aylikPuantajSayfasinaGit(p)">📊 30 Günlük Puantaj</button>
+                  </td>
+                </tr>
+
+                <tr *ngIf="personelListesi.length === 0">
+                  <td colspan="8" class="empty-state">
+                    Lütfen yukarıdan Organizasyon ve Bölüm seçiniz.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- SAYFA 2: BÜTÜNSEL AYLIK PUANTAJ DÖKÜMÜ (30 GÜN İK SAYFASI) -->
+      <ng-container *ngIf="aktifSekme === 'aylik'">
+        <div class="page-header">
+          <h2>İnsan Kaynakları - Personel Aylık Puantaj Cetveli (30 Gün)</h2>
+        </div>
+
+        <section class="card filter-card">
+          <div class="form-row">
+            <div class="form-group">
+              <label>PERSONEL SEÇİNİZ</label>
+              <select [(ngModel)]="secilenAylikPersonelSicil" (change)="aylikPersonelDegisti()">
+                <option value="1001">1001 - Personel A (Fırın Operatörü)</option>
+                <option value="1002">1002 - Personel B (Postabaşı)</option>
+                <option value="1003">1003 - Personel C (Saha Elemanı)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+  <label>PUANTAJ AYI / YIL</label>
+  <input type="month" [(ngModel)]="secilenAylikTarih" (change)="aylikTarihDegisti()" />
+</div>
+
+          <div class="form-group flex-end">
+              <button type="button" class="btn-navy" (click)="excelIndir()">📄 Excel Çıktı Al</button>
+            </div>
+          </div>
+        </section>
+        
+        <!-- İK Özet Kartları (Dinamik Hesaplanan) -->
+<div class="ik-summary-cards">
+  <div class="summary-card">
+    <span class="card-num">{{ozetOzet.fiiliCalisilanGun}} Gün</span>
+    <span class="card-txt">Fiili Çalışılan</span>
+  </div>
+  <div class="summary-card blue">
+    <span class="card-num">{{ozetOzet.haftaIzniGun}} Gün</span>
+    <span class="card-txt">Hafta İzni (H.İ)</span>
+  </div>
+  <div class="summary-card green">
+    <span class="card-num">{{ozetOzet.resmiTatilGun}} Gün</span>
+    <span class="card-txt">Resmi Tatil (R.T)</span>
+  </div>
+  <div class="summary-card orange">
+    <span class="card-num">{{ozetOzet.toplamFazlaMesai}} Saat</span>
+    <span class="card-txt">Toplam Fazla Mesai</span>
+  </div>
+  <div class="summary-card red">
+    <span class="card-num">{{ozetOzet.raporVeIzinGun}} Gün</span>
+    <span class="card-txt">Rapor / Mazeret İzin</span>
+  </div>
+</div>
+
+        <!-- 30 Günlük Dev Tablo -->
+        <section class="card table-card">
+          <div class="card-title">
+            <span>📅</span>
+            <h3>Ağustos 2026 - {{secilenAylikPersonelAd}} (30 Günlük Hareket Tablosu)</h3>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table monthly-table">
+              <thead>
+                <tr>
+                  <th>Gün</th>
+                  <th>Tarih</th>
+                  <th>Gün Adı</th>
+                  <th>Vardiya Tip</th>
+                  <th>Giriş</th>
+                  <th>Çıkış</th>
+                  <th>Çalışılan Saat</th>
+                  <th>Fazla Mesai</th>
+                  <th>Günlük Durum / İzin Tipi</th>
+                  <th>Açıklama / Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let g of otuzGunlukPuantaj" [ngClass]="{
+                  'row-weekoff': g.durum === 'HAFTA İZNİ',
+                  'row-holiday': g.durum === 'RESMİ TATİL',
+                  'row-leave': g.durum.includes('İZNİ') || g.durum.includes('RAPOR')
+                }">
+                  <td class="font-bold">{{g.gunNo}}</td>
+                  <td>{{g.tarih}}</td>
+                  <td class="font-bold">{{g.gunAdi}}</td>
+                  <td>{{g.vardiya}}</td>
+                  <td>{{g.giris || '-'}}</td>
+                  <td>{{g.cikis || '-'}}</td>
+                  <td>{{g.calisilanSaat}} Sa</td>
+                  <td>{{g.fazlaMesai > 0 ? '+' + g.fazlaMesai + ' Sa' : '-'}}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'status-success': g.durum === 'NORMAL ÇALIŞMA',
+                      'status-warning': g.durum.includes('MESAİ') || g.durum.includes('ERKEN'),
+                      'status-neutral': g.durum === 'HAFTA İZNİ' || g.durum === 'RESMİ TATİL',
+                      'status-danger': g.durum.includes('RAPOR') || g.durum.includes('DEVAMSIZ')
+                    }">
+                      {{g.durum}}
+                    </span>
+                  </td>
+                  <td>{{g.aciklama || '-'}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </ng-container>
+
+    </main>
+  </div>
+</div>
