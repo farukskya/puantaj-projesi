@@ -1,16 +1,55 @@
-<div class="layout-wrapper">
+<!-- 1. GİRİŞ YAPILMAMIŞSA: LOGIN EKRANI -->
+<div class="login-wrapper" *ngIf="!isLoggedIn">
+  <div class="login-card">
+    <div class="login-header">
+      <span class="brand-icon">🏢</span>
+      <h2>Puantaj Portal Girişi</h2>
+      <p>Lütfen Sicil Numaranız ve Şifreniz ile giriş yapınız.</p>
+    </div>
+    <div class="login-body">
+      <div class="form-group mb-3">
+        <label>SİCİL NO</label>
+        <input type="text" class="form-control" [(ngModel)]="loginSicil" placeholder="Örn: ADMIN veya PER-1021" />
+      </div>
+      <div class="form-group mb-3">
+        <label>ŞİFRE</label>
+        <input type="password" class="form-control" [(ngModel)]="loginSifre" placeholder="Şifreniz (Varsayılan: 1234)" (keyup.enter)="girisYap()" />
+      </div>
+      <div class="alert alert-danger" *ngIf="loginHata">
+        {{ loginHata }}
+      </div>
+      <button class="btn-navy w-100" (click)="girisYap()">🔐 Giriş Yap</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. GİRİŞ YAPILMIŞSA: UYGULAMA ARAYÜZÜ -->
+<div class="layout-wrapper" *ngIf="isLoggedIn">
   <!-- Sol Menü (Sidebar) -->
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-icon">🏢</span>
       <span class="brand-title">Puantaj Portal</span>
     </div>
+
+    <!-- Kullanıcı Kartı -->
+    <div class="user-info-box" *ngIf="currentUser">
+      <span class="user-role-badge" [ngClass]="currentUser.rol === 'ADMIN' ? 'role-admin' : 'role-isci'">
+        {{ currentUser.rol === 'ADMIN' ? 'YÖNETİCİ' : 'İŞÇİ' }}
+      </span>
+      <p class="user-name">{{ currentUser.adSoyad }}</p>
+      <p class="user-sicil">{{ currentUser.sicilNo }}</p>
+    </div>
+
     <nav class="nav-menu">
-      <button class="nav-item" [class.active]="aktifSekme === 'gunluk'" (click)="aktifSekme = 'gunluk'">
+      <button *ngIf="currentUser?.rol === 'ADMIN'" class="nav-item" [class.active]="aktifSekme === 'gunluk'" (click)="aktifSekme = 'gunluk'">
         📅 Günlük Puantaj
       </button>
       <button class="nav-item" [class.active]="aktifSekme === 'aylik'" (click)="aktifSekme = 'aylik'">
         📊 30 Günlük İK Cetveli
+      </button>
+      <button class="nav-item btn-logout" (click)="cikisYap()">
+        🚪 Güvenli Çıkış
       </button>
     </nav>
   </aside>
@@ -18,8 +57,8 @@
   <!-- Ana İçerik Alanı -->
   <main class="content-area">
 
-    <!-- 1. SEKME: GÜNLÜK PUANTAJ GİRİŞİ -->
-    <div *ngIf="aktifSekme === 'gunluk'">
+    <!-- 1. SEKME: GÜNLÜK PUANTAJ GİRİŞİ (Sadece ADMIN Görebilir) -->
+    <div *ngIf="aktifSekme === 'gunluk' && currentUser?.rol === 'ADMIN'">
       
       <!-- Organizasyon ve Vardiya Seçim Kartı -->
       <div class="card">
@@ -136,16 +175,14 @@
                     </span>
                   </td>
                   <td>
-                    <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
-  <option value="NORMAL">NORMAL (8 Saat)</option>
-  <option value="FAZLA_MESAI">FAZLA MESAİ</option>
-  <option value="ERKEN_CIKTI">ERKEN ÇIKTI</option>
-  <option value="MAZERETLI">MAZERETLİ / İZİNLİ</option>
-  <option value="HAFTA_IZNI">HAFTA İZNİ</option>
-  <option value="RESMI_TATIL">RESMİ TATİL</option>
-  <option value="DEVAMSIZ">DEVAMSIZ</option>
-  <option value="EKSİK_KART">EKSİK KART</option>
-</select>
+                    <select class="form-control-sm" [(ngModel)]="p.mazeretTuru">
+                      <option value="">Mazeret Yok / Temiz</option>
+                      <option value="Doktor Sevk">Doktor Sevk</option>
+                      <option value="İdari İzin">İdari İzin</option>
+                      <option value="Şahsi İzin">Şahsi İzin</option>
+                      <option value="Sıhhi İzin">Sıhhi İzin</option>
+                      <option value="Görevli">Görevli / Dış Görev</option>
+                    </select>
                   </td>
                   <td>
                     <input type="text" class="form-control-sm" [(ngModel)]="p.mazeretNotu" placeholder="Not veya mazeret açıklaması..." />
@@ -168,30 +205,30 @@
       </div>
     </div>
 
-    <!-- 2. SEKME: 30 GÜNLÜK İK PUANTAJ CETVELİ -->
+    <!-- 2. SEKME: 30 GÜNLÜK İK PUANTAJ CETVELİ (TÜM ROLER GÖREBİLİR) -->
     <div *ngIf="aktifSekme === 'aylik'">
       
       <!-- İK Özet Sayaç Kartları -->
       <div class="ik-summary-cards">
+        <div class="summary-card purple">
+          <span class="count">{{ toplamCalisilanSaatMetni }}</span>
+          <span class="label">Ay İçi Toplam Çalışma Saati</span>
+        </div>
         <div class="summary-card blue">
-          <span class="count">{{ toplamFiiliCalisma }}</span>
+          <span class="count">{{ toplamFiiliCalisma }} Gün</span>
           <span class="label">Fiili Çalışılan Gün</span>
         </div>
         <div class="summary-card gray">
-          <span class="count">{{ toplamHaftaIzni }}</span>
+          <span class="count">{{ toplamHaftaIzni }} Gün</span>
           <span class="label">Hafta İzni (Pazar)</span>
         </div>
         <div class="summary-card green">
-          <span class="count">{{ toplamResmiTatil }}</span>
+          <span class="count">{{ toplamResmiTatil }} Gün</span>
           <span class="label">Resmi Tatil</span>
         </div>
         <div class="summary-card orange">
-          <span class="count">{{ toplamMazeret }}</span>
+          <span class="count">{{ toplamMazeret }} Gün</span>
           <span class="label">Mazeret / İzinli</span>
-        </div>
-        <div class="summary-card red">
-          <span class="count">{{ toplamDevamsiz }}</span>
-          <span class="label">Devamsız / Eksik</span>
         </div>
       </div>
 
@@ -199,7 +236,7 @@
       <div class="card">
         <div class="card-header card-header-flex">
           <h3>
-            📊 30 Günlük Puantaj Cetveli 
+            📊 30 Günlük İK Puantaj Cetveli 
             <span *ngIf="seciliPersonel" style="color: #2563eb; font-weight: 700; margin-left: 8px;">
               ({{ seciliPersonel.adSoyad }} - {{ seciliPersonel.sicilNo }})
             </span>
@@ -231,23 +268,25 @@
                   <td><strong>{{ seciliPersonel ? seciliPersonel.adSoyad : 'Genel Personel' }}</strong></td>
                   <td>{{ gun.gunAdi }}</td>
                   <td>
-                    <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
+                    <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()" [disabled]="currentUser?.rol === 'ISCI'">
                       <option value="NORMAL">NORMAL (8 Saat)</option>
+                      <option value="FAZLA_MESAI">FAZLA MESAİ</option>
+                      <option value="ERKEN_CIKTI">ERKEN ÇIKTI</option>
+                      <option value="MAZERETLI">MAZERETLİ / İZİNLİ</option>
                       <option value="HAFTA_IZNI">HAFTA İZNİ</option>
                       <option value="RESMI_TATIL">RESMİ TATİL</option>
-                      <option value="MAZERETLI">MAZERETLİ / İZİNLİ</option>
-                      <option value="FAZLA_MESAI">FAZLA MESAİ</option>
                       <option value="DEVAMSIZ">DEVAMSIZ</option>
+                      <option value="EKSİK_KART">EKSİK KART</option>
                     </select>
                   </td>
                   <td>
-                    <input type="time" class="form-control-sm" [(ngModel)]="gun.girisSaati" [disabled]="gun.durum === 'HAFTA_IZNI' || gun.durum === 'RESMI_TATIL'" />
+                    <input type="time" class="form-control-sm" [(ngModel)]="gun.girisSaati" [disabled]="gun.durum === 'HAFTA_IZNI' || gun.durum === 'RESMI_TATIL' || currentUser?.rol === 'ISCI'" />
                   </td>
                   <td>
-                    <input type="time" class="form-control-sm" [(ngModel)]="gun.cikisSaati" [disabled]="gun.durum === 'HAFTA_IZNI' || gun.durum === 'RESMI_TATIL'" />
+                    <input type="time" class="form-control-sm" [(ngModel)]="gun.cikisSaati" [disabled]="gun.durum === 'HAFTA_IZNI' || gun.durum === 'RESMI_TATIL' || currentUser?.rol === 'ISCI'" />
                   </td>
                   <td>
-                    <input type="text" class="form-control-sm" [(ngModel)]="gun.not" placeholder="Not ekle..." />
+                    <input type="text" class="form-control-sm" [(ngModel)]="gun.not" placeholder="Not ekle..." [disabled]="currentUser?.rol === 'ISCI'" />
                   </td>
                 </tr>
               </tbody>
@@ -257,7 +296,7 @@
       </div>
     </div>
 
-    <!-- Başarılı Kayıt Toast Bildirimi -->
+    <!-- Toast Bildirimi -->
     <div class="toast-notification" *ngIf="showSuccessToast">
       <div class="toast-content">
         <span class="toast-icon">✅</span>

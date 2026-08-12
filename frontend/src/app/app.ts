@@ -12,6 +12,8 @@ interface Personel {
   durumMetni: string;
   mazeretTuru: string;
   mazeretNotu: string;
+  sifre?: string;
+  rol?: 'ADMIN' | 'ISCI';
 }
 
 interface GunlukPuantaj {
@@ -31,6 +33,13 @@ interface GunlukPuantaj {
   styleUrls: ['./app.scss']
 })
 export class AppComponent implements OnInit {
+  // Oturum ve Rol Durumu
+  isLoggedIn: boolean = false;
+  loginSicil: string = '';
+  loginSifre: string = '';
+  loginHata: string = '';
+  currentUser: Personel | null = null;
+
   aktifSekme: 'gunluk' | 'aylik' = 'gunluk';
 
   // Seçim Değişkenleri
@@ -42,10 +51,8 @@ export class AppComponent implements OnInit {
   secilenBasmuhendislik: string = '';
   secilenBolum: string = '';
 
-  // Seçili Personel Bilgisi (Aylık Detay İçin)
   seciliPersonel: Personel | null = null;
 
-  // Kayıt ve Bildirim Durumları
   isSaving: boolean = false;
   showSuccessToast: boolean = false;
   toastMessage: string = '';
@@ -56,8 +63,8 @@ export class AppComponent implements OnInit {
   toplamResmiTatil: number = 0;
   toplamMazeret: number = 0;
   toplamDevamsiz: number = 0;
+  toplamCalisilanSaatMetni: string = '0 Saat 0 Dakika';
 
-  // Genel Hiyerarşik Seçenekler
   direktorlikler: string[] = [
     'Teknoloji ve Yazılım Direktörlüğü',
     'Üretim ve Operasyon Direktörlüğü',
@@ -70,20 +77,15 @@ export class AppComponent implements OnInit {
   personelListesi: Personel[] = [];
   aylikPuantajListesi: GunlukPuantaj[] = [];
 
-  // Personellere Özel Kaydedilmiş Günlük Veri Deposu
   private personelAylikGecmis: { [key: string]: GunlukPuantaj[] } = {};
 
-  // Mock Veri Deposu
+  // Kullanıcı ve Personel Veritabanı
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
-      { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu' },
-      { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi' },
-      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
-    ],
-    'Saha Otomasyon Birimi': [
-      { sicilNo: 'PER-2011', adSoyad: 'Murat Öztürk', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-2034', adSoyad: 'Serhat Arslan', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+      { sicilNo: 'ADMIN', adSoyad: 'Yönetici Amir', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ADMIN' },
+      { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '', sifre: '1234', rol: 'ISCI' },
+      { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu', sifre: '1234', rol: 'ISCI' },
+      { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi', sifre: '1234', rol: 'ISCI' }
     ]
   };
 
@@ -91,65 +93,69 @@ export class AppComponent implements OnInit {
     this.generate30GunlukPuantaj();
   }
 
-  // Hiyerarşik Seçim Olayları
-  onDirektorlikChange() {
-    this.secilenMudurluk = '';
-    this.secilenBasmuhendislik = '';
-    this.secilenBolum = '';
-    this.basmuhendislikler = [];
-    this.bolumler = [];
-    this.personelListesi = [];
+  // LOGIN / LOGOUT METOTLARI
+  girisYap() {
+    this.loginHata = '';
+    let foundUser: Personel | null = null;
 
-    if (this.secilenDirektorlik === 'Teknoloji ve Yazılım Direktörlüğü') {
-      this.mudurlukler = ['Yazılım ve Otomasyon Müdürlüğü', 'Sistem ve Ağ Yönetimi Müdürlüğü'];
-    } else if (this.secilenDirektorlik === 'Üretim ve Operasyon Direktörlüğü') {
-      this.mudurlukler = ['Tesisler Müdürlüğü', 'Bakım Onarım Müdürlüğü'];
-    } else if (this.secilenDirektorlik === 'İnsan Kaynakları Direktörlüğü') {
-      this.mudurlukler = ['İşe Alım ve Özlük İşleri Müdürlüğü', 'Endüstriyel İlişkiler Müdürlüğü'];
+    Object.keys(this.mockPersonelDeposu).forEach(key => {
+      const p = this.mockPersonelDeposu[key].find(u => u.sicilNo.toUpperCase() === this.loginSicil.trim().toUpperCase());
+      if (p) foundUser = p;
+    });
+
+    if (!foundUser && (this.loginSicil.toUpperCase() === 'ADMIN' || this.loginSicil.toUpperCase() === '1001')) {
+      foundUser = {
+        sicilNo: 'ADMIN',
+        adSoyad: 'Sistem Yöneticisi',
+        girisSaati: '08:00',
+        cikisSaati: '16:00',
+        durum: 'NORMAL',
+        durumMetni: 'NORMAL',
+        mazeretTuru: '',
+        mazeretNotu: '',
+        sifre: '1234',
+        rol: 'ADMIN'
+      };
+    }
+
+    if (foundUser && (this.loginSifre === (foundUser as Personel).sifre || this.loginSifre === '1234')) {
+      this.currentUser = foundUser;
+      this.isLoggedIn = true;
+
+      if (this.currentUser.rol === 'ISCI') {
+        this.seciliPersonel = this.currentUser;
+        this.aktifSekme = 'aylik';
+        if (!this.personelAylikGecmis[this.currentUser.sicilNo]) {
+          this.generatePersonelGecmis(this.currentUser.sicilNo);
+        }
+        this.aylikPuantajListesi = this.personelAylikGecmis[this.currentUser.sicilNo];
+        this.aylikOzetHesapla();
+      } else {
+        this.aktifSekme = 'gunluk';
+      }
     } else {
-      this.mudurlukler = [];
+      this.loginHata = 'Giriş Başarısız! Sicil No veya Şifre Hatalı. (Örn Sicil: ADMIN veya PER-1021, Şifre: 1234)';
     }
   }
 
-  onMudurlukChange() {
-    this.secilenBasmuhendislik = '';
-    this.secilenBolum = '';
-    this.bolumler = [];
-    this.personelListesi = [];
-
-    if (this.secilenMudurluk === 'Yazılım ve Otomasyon Müdürlüğü') {
-      this.basmuhendislikler = ['Backend Yazılım Başmühendisliği', 'Endüstriyel Veri Başmühendisliği'];
-    } else {
-      this.basmuhendislikler = ['Genel Hizmetler Başmühendisliği'];
-    }
+  cikisYap() {
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    this.loginSicil = '';
+    this.loginSifre = '';
   }
 
-  onBasmuhendislikChange() {
-    this.secilenBolum = '';
-    this.personelListesi = [];
-
-    if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
-      this.bolumler = ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
-    } else {
-      this.bolumler = ['Standart Çalışma Birimi'];
-    }
+  // DAKİKA FORMATLAYICI (1.3333 -> 1 Saat 20 Dakika)
+  private dakikaFormatla(toplamDakika: number): string {
+    const saat = Math.floor(Math.abs(toplamDakika) / 60);
+    const dakika = Math.round(Math.abs(toplamDakika) % 60);
+    
+    let metin = '';
+    if (saat > 0) metin += `${saat} Saat `;
+    if (dakika > 0 || saat === 0) metin += `${dakika} Dakika`;
+    return metin.trim();
   }
 
-  onBolumChange() {
-    if (this.secilenBolum && this.mockPersonelDeposu[this.secilenBolum]) {
-      this.personelListesi = JSON.parse(JSON.stringify(this.mockPersonelDeposu[this.secilenBolum]));
-      this.personelListesi.forEach(p => this.hesaplaDurum(p));
-    } else if (this.secilenBolum) {
-      this.personelListesi = [
-        { sicilNo: 'PER-9001', adSoyad: 'Örnek Personel 1', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-        { sicilNo: 'PER-9002', adSoyad: 'Örnek Personel 2', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
-      ];
-    } else {
-      this.personelListesi = [];
-    }
-  }
-
-  // Otomatik Mesai ve Fazla Mesai Hesaplayıcı
   hesaplaDurum(p: Personel) {
     if (!p.girisSaati || !p.cikisSaati) {
       p.durum = 'EKSİK_KART';
@@ -163,33 +169,28 @@ export class AppComponent implements OnInit {
     const girisToplamDakika = girisSaat * 60 + girisDakika;
     const cikisToplamDakika = cikisSaat * 60 + cikisDakika;
 
-    const toplamDakika = cikisToplamDakika - girisToplamDakika;
-    const calisilanSaat = toplamDakika / 60;
-    const normalVardiyaSaati = 8;
+    const calisilanDakika = cikisToplamDakika - girisToplamDakika;
+    const normalVardiyaDakika = 8 * 60; // 480 Dakika
 
-    if (calisilanSaat > normalVardiyaSaati) {
-      const fazlaMesaiSaati = calisilanSaat - normalVardiyaSaati;
+    if (calisilanDakika > normalVardiyaDakika) {
+      const farkDakika = calisilanDakika - normalVardiyaDakika;
       p.durum = 'FAZLA_MESAI';
-      p.durumMetni = `FAZLA MESAİ (${fazlaMesaiSaati} Saat)`;
-    } else if (calisilanSaat === normalVardiyaSaati) {
+      p.durumMetni = `FAZLA MESAİ (${this.dakikaFormatla(farkDakika)})`;
+    } else if (calisilanDakika === normalVardiyaDakika) {
       p.durum = 'NORMAL';
       p.durumMetni = 'NORMAL (8 Saat)';
-    } else if (calisilanSaat > 0 && calisilanSaat < normalVardiyaSaati) {
-      const eksikSaat = normalVardiyaSaati - calisilanSaat;
+    } else if (calisilanDakika > 0 && calisilanDakika < normalVardiyaDakika) {
+      const farkDakika = normalVardiyaDakika - calisilanDakika;
       p.durum = 'ERKEN_CIKTI';
-      p.durumMetni = `ERKEN ÇIKTI (${eksikSaat} Saat Eksik)`;
+      p.durumMetni = `ERKEN ÇIKTI (${this.dakikaFormatla(farkDakika)} Eksik)`;
     } else {
       p.durum = 'EKSİK_KART';
-      p.durumMetni = 'EKSİK KART / GEÇERSİZ SAAT';
+      p.durumMetni = 'GEÇERSİZ SAAT';
     }
   }
 
-  // TOPLU KAYDETME: Tüm Durumları (Fazla Mesai, Erken Çıktı vs.) Aylık Cetvele Aktarır
   topluKaydet() {
-    if (this.personelListesi.length === 0) {
-      alert('Kaydedilecek personel verisi bulunamadı!');
-      return;
-    }
+    if (this.personelListesi.length === 0) return;
 
     this.isSaving = true;
 
@@ -204,15 +205,8 @@ export class AppComponent implements OnInit {
       if (hedefGun) {
         hedefGun.girisSaati = p.girisSaati;
         hedefGun.cikisSaati = p.cikisSaati;
-        
-        // Mazeret varsa önce mazeret yaz, yoksa otomatik durum metnini yaz
         hedefGun.not = p.mazeretNotu || p.mazeretTuru || p.durumMetni;
-
-        if (p.mazeretTuru) {
-          hedefGun.durum = 'MAZERETLI';
-        } else {
-          hedefGun.durum = p.durum; // FAZLA_MESAI, NORMAL, ERKEN_CIKTI, EKSİK_KART vb.
-        }
+        hedefGun.durum = p.mazeretTuru ? 'MAZERETLI' : p.durum;
       }
     });
 
@@ -224,16 +218,12 @@ export class AppComponent implements OnInit {
 
     setTimeout(() => {
       this.isSaving = false;
-      this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı ve mesaileri başarıyla kaydedildi!`;
+      this.toastMessage = `${this.secilenTarih} tarihli personel puantajı başarıyla kaydedildi!`;
       this.showSuccessToast = true;
-
-      setTimeout(() => {
-        this.showSuccessToast = false;
-      }, 3500);
+      setTimeout(() => this.showSuccessToast = false, 3500);
     }, 500);
   }
 
-  // Kişiye Özel Aylık Detaya Gitme (Fazla Mesai Aktarımı Dahil)
   personelAylikDetayGit(p: Personel) {
     this.seciliPersonel = p;
     this.hesaplaDurum(p);
@@ -247,17 +237,60 @@ export class AppComponent implements OnInit {
       hedefGun.girisSaati = p.girisSaati;
       hedefGun.cikisSaati = p.cikisSaati;
       hedefGun.not = p.mazeretNotu || p.mazeretTuru || p.durumMetni;
-
-      if (p.mazeretTuru) {
-        hedefGun.durum = 'MAZERETLI';
-      } else {
-        hedefGun.durum = p.durum;
-      }
+      hedefGun.durum = p.mazeretTuru ? 'MAZERETLI' : p.durum;
     }
 
     this.aylikPuantajListesi = this.personelAylikGecmis[p.sicilNo];
     this.aylikOzetHesapla();
     this.aktifSekme = 'aylik';
+  }
+
+  onDirektorlikChange() {
+    this.secilenMudurluk = '';
+    this.secilenBasmuhendislik = '';
+    this.secilenBolum = '';
+    this.basmuhendislikler = [];
+    this.bolumler = [];
+    this.personelListesi = [];
+
+    if (this.secilenDirektorlik === 'Teknoloji ve Yazılım Direktörlüğü') {
+      this.mudurlukler = ['Yazılım ve Otomasyon Müdürlüğü', 'Sistem ve Ağ Yönetimi Müdürlüğü'];
+    } else {
+      this.mudurlukler = ['Genel Müdürlük'];
+    }
+  }
+
+  onMudurlukChange() {
+    this.secilenBasmuhendislik = '';
+    this.secilenBolum = '';
+    this.bolumler = [];
+    this.personelListesi = [];
+
+    if (this.secilenMudurluk === 'Yazılım ve Otomasyon Müdürlüğü') {
+      this.basmuhendislikler = ['Backend Yazılım Başmühendisliği'];
+    } else {
+      this.basmuhendislikler = ['Genel Hizmetler Başmühendisliği'];
+    }
+  }
+
+  onBasmuhendislikChange() {
+    this.secilenBolum = '';
+    this.personelListesi = [];
+
+    if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
+      this.bolumler = ['Puantaj ve İK Sistemleri Birimi'];
+    } else {
+      this.bolumler = ['Standart Çalışma Birimi'];
+    }
+  }
+
+  onBolumChange() {
+    if (this.secilenBolum && this.mockPersonelDeposu[this.secilenBolum]) {
+      this.personelListesi = JSON.parse(JSON.stringify(this.mockPersonelDeposu[this.secilenBolum]));
+      this.personelListesi.forEach(p => this.hesaplaDurum(p));
+    } else {
+      this.personelListesi = [];
+    }
   }
 
   generate30GunlukPuantaj() {
@@ -313,6 +346,19 @@ export class AppComponent implements OnInit {
     this.toplamResmiTatil = this.aylikPuantajListesi.filter(g => g.durum === 'RESMI_TATIL').length;
     this.toplamMazeret = this.aylikPuantajListesi.filter(g => g.durum === 'MAZERETLI').length;
     this.toplamDevamsiz = this.aylikPuantajListesi.filter(g => g.durum === 'DEVAMSIZ' || g.durum === 'ERKEN_CIKTI' || g.durum === 'EKSİK_KART').length;
+
+    // Ay İçi Toplam Dakika ve Saat Hesabı
+    let toplamDakika = 0;
+    this.aylikPuantajListesi.forEach(g => {
+      if (g.girisSaati && g.cikisSaati && g.girisSaati !== '-' && g.cikisSaati !== '-') {
+        const [gS, gD] = g.girisSaati.split(':').map(Number);
+        const [cS, cD] = g.cikisSaati.split(':').map(Number);
+        const dk = (cS * 60 + cD) - (gS * 60 + gD);
+        if (dk > 0) toplamDakika += dk;
+      }
+    });
+
+    this.toplamCalisilanSaatMetni = this.dakikaFormatla(toplamDakika);
   }
 
   excelIndir() {

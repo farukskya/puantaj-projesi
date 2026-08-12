@@ -478,3 +478,102 @@ body {
     }
   }
 }
+/* Login Ekranı Stilleri */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding: 20px;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 24px;
+
+    .brand-icon {
+      font-size: 2.5rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #0f172a;
+      margin-top: 8px;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+  }
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+}
+
+/* Kullanıcı Bilgisi Sol Menü */
+.user-info-box {
+  background-color: #1e293b;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+
+  .user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #f8fafc;
+  }
+
+  .user-sicil {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .user-role-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+
+    &.role-admin {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    &.role-isci {
+      background-color: #10b981;
+      color: white;
+    }
+  }
+}
+
+.btn-logout {
+  margin-top: auto;
+  color: #ef4444 !important;
+  &:hover {
+    background-color: #451a1a !important;
+  }
+}
+
+.summary-card.purple .count {
+  color: #8b5cf6;
+}
