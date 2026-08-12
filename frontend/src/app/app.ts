@@ -88,7 +88,6 @@ export class AppComponent implements OnInit {
   };
 
   ngOnInit() {
-    // İlk Açılışta Varsayılan Liste Oluştur
     this.generate30GunlukPuantaj();
   }
 
@@ -130,7 +129,7 @@ export class AppComponent implements OnInit {
     this.personelListesi = [];
 
     if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
-      this.bolumler = ['Puantaj me İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
+      this.bolumler = ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
     } else {
       this.bolumler = ['Standart Çalışma Birimi'];
     }
@@ -193,6 +192,13 @@ export class AppComponent implements OnInit {
       }
     });
 
+    // Varsayılan olarak listedeki ilk personeli aylık görünüm için seçili yapar
+    if (this.personelListesi.length > 0) {
+      this.seciliPersonel = this.personelListesi[0];
+      this.aylikPuantajListesi = this.personelAylikGecmis[this.seciliPersonel.sicilNo];
+      this.aylikOzetHesapla();
+    }
+
     setTimeout(() => {
       this.isSaving = false;
       this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı başarıyla kaydedildi!`;
@@ -226,7 +232,6 @@ export class AppComponent implements OnInit {
     this.aktifSekme = 'aylik';
   }
 
-  // Varsayılan 30 Günlük Şablon Oluşturucu
   generate30GunlukPuantaj() {
     this.aylikPuantajListesi = this.createBase30Gun();
     this.aylikOzetHesapla();

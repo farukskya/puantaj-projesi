@@ -148,7 +148,6 @@
                     <input type="text" class="form-control-sm" [(ngModel)]="p.mazeretNotu" placeholder="Not veya mazeret açıklaması..." />
                   </td>
                   <td>
-                    <!-- Personelin Aylık Puantajına Gitme Butonu -->
                     <button class="btn-sm-action" (click)="personelAylikDetayGit(p)">
                       📊 Aylık Detay
                     </button>
@@ -212,6 +211,7 @@
               <thead>
                 <tr>
                   <th>Tarih</th>
+                  <th>Personel Adı Soyadı</th>
                   <th>Gün</th>
                   <th>Günlük Çalışma / İzin Durumu</th>
                   <th>Giriş Saati</th>
@@ -225,6 +225,8 @@
                   'row-holiday': gun.durum === 'RESMI_TATIL'
                 }">
                   <td><strong>{{ gun.tarih }}</strong></td>
+                  <!-- İsim Kolonu -->
+                  <td><strong>{{ seciliPersonel ? seciliPersonel.adSoyad : 'Genel Personel' }}</strong></td>
                   <td>{{ gun.gunAdi }}</td>
                   <td>
                     <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
