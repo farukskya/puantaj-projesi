@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8">
-  <title>KARDEMİR Vardiya ve Puantaj Takip Sistemi</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root><div class="layout-wrapper">
+<div class="layout-wrapper">
   <!-- Sol Menü (Sidebar) -->
   <aside class="sidebar">
     <div class="brand">
@@ -120,7 +110,7 @@
                   <th>Giriş Saati</th>
                   <th>Çıkış Saati</th>
                   <th>Otomatik Durum</th>
-                  <th>Mazeret Türü</th>
+                  <th>Mazeret Türü (Her Daim Açık)</th>
                   <th>Mazeret / Vardiya Notu</th>
                 </tr>
               </thead>
@@ -144,6 +134,7 @@
                     </span>
                   </td>
                   <td>
+                    <!-- Mazeret Türü Artık Her Şartta Açık -->
                     <select class="form-control-sm" [(ngModel)]="p.mazeretTuru">
                       <option value="">Mazeret Yok / Temiz</option>
                       <option value="Doktor Sevk">Doktor Sevk</option>
@@ -211,7 +202,7 @@
                 <tr>
                   <th>Tarih</th>
                   <th>Gün</th>
-                  <th>Günlük Çalışma / İzin Durumu</th>
+                  <th>Günlük Çalışma / İzin Durumu (Düzenlenebilir)</th>
                   <th>Giriş Saati</th>
                   <th>Çıkış Saati</th>
                   <th>Açıklama / Not</th>
@@ -225,6 +216,7 @@
                   <td><strong>{{ gun.tarih }}</strong></td>
                   <td>{{ gun.gunAdi }}</td>
                   <td>
+                    <!-- Aylık Puantaj Düzenleme Seçeneği -->
                     <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
                       <option value="NORMAL">NORMAL (8 Saat)</option>
                       <option value="HAFTA_IZNI">HAFTA İZNİ</option>
@@ -263,6 +255,4 @@
     </div>
 
   </main>
-</div></app-root>
-</body>
-</html>
+</div>
