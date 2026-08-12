@@ -39,9 +39,13 @@ export class AppComponent implements OnInit {
   loginHata: string = '';
   currentUser: Personel | null = null;
 
+  isDarkMode: boolean = false;
   aramaMetni: string = '';
+
   aktifSekme: 'gunluk' | 'aylik' | 'profil' = 'gunluk';
 
+  // Profil Düzenleme Modeli
+  profilAdSoyad: string = '';
   profilSifre: string = '';
 
   secilenTarih: string = '2026-08-12';
@@ -92,6 +96,11 @@ export class AppComponent implements OnInit {
     this.generate30GunlukPuantaj();
   }
 
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+  }
+
+  // Anlık Personel Filtreleyici
   get filtrelenmisPersoneller(): Personel[] {
     if (!this.aramaMetni.trim()) return this.personelListesi;
     const q = this.aramaMetni.toLowerCase().trim();
@@ -126,6 +135,7 @@ export class AppComponent implements OnInit {
 
     if (foundUser && (this.loginSifre === (foundUser as Personel).sifre || this.loginSifre === '1234')) {
       this.currentUser = foundUser;
+      this.profilAdSoyad = this.currentUser.adSoyad;
       this.profilSifre = this.currentUser.sifre || '1234';
       this.isLoggedIn = true;
 
@@ -154,8 +164,9 @@ export class AppComponent implements OnInit {
 
   profilKaydet() {
     if (this.currentUser) {
+      this.currentUser.adSoyad = this.profilAdSoyad;
       this.currentUser.sifre = this.profilSifre;
-      this.toastMessage = 'Giriş şifreniz başarıyla güncellendi!';
+      this.toastMessage = 'Profil bilgileriniz başarıyla güncellendi!';
       this.showSuccessToast = true;
       setTimeout(() => this.showSuccessToast = false, 3000);
     }
