@@ -136,14 +136,16 @@
                     </span>
                   </td>
                   <td>
-                    <select class="form-control-sm" [(ngModel)]="p.mazeretTuru">
-                      <option value="">Mazeret Yok / Temiz</option>
-                      <option value="Doktor Sevk">Doktor Sevk</option>
-                      <option value="İdari İzin">İdari İzin</option>
-                      <option value="Şahsi İzin">Şahsi İzin</option>
-                      <option value="Sıhhi İzin">Sıhhi İzin</option>
-                      <option value="Görevli">Görevli / Dış Görev</option>
-                    </select>
+                    <select class="form-control-sm" [(ngModel)]="gun.durum" (change)="aylikOzetHesapla()">
+  <option value="NORMAL">NORMAL (8 Saat)</option>
+  <option value="FAZLA_MESAI">FAZLA MESAİ</option>
+  <option value="ERKEN_CIKTI">ERKEN ÇIKTI</option>
+  <option value="MAZERETLI">MAZERETLİ / İZİNLİ</option>
+  <option value="HAFTA_IZNI">HAFTA İZNİ</option>
+  <option value="RESMI_TATIL">RESMİ TATİL</option>
+  <option value="DEVAMSIZ">DEVAMSIZ</option>
+  <option value="EKSİK_KART">EKSİK KART</option>
+</select>
                   </td>
                   <td>
                     <input type="text" class="form-control-sm" [(ngModel)]="p.mazeretNotu" placeholder="Not veya mazeret açıklaması..." />
