@@ -42,6 +42,9 @@ export class AppComponent implements OnInit {
   secilenBasmuhendislik: string = '';
   secilenBolum: string = '';
 
+  // Seçili Personel Bilgisi (Aylık Detay İçin)
+  seciliPersonel: Personel | null = null;
+
   // Kayıt ve Bildirim Durumları
   isSaving: boolean = false;
   showSuccessToast: boolean = false;
@@ -67,23 +70,17 @@ export class AppComponent implements OnInit {
   personelListesi: Personel[] = [];
   aylikPuantajListesi: GunlukPuantaj[] = [];
 
-  // Genel Mock Veri Deposu (Firma İsmi İçermez)
+  // Mock Veri Deposu
   private mockPersonelDeposu: { [key: string]: Personel[] } = {
     'Puantaj ve İK Sistemleri Birimi': [
       { sicilNo: 'PER-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
       { sicilNo: 'PER-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Poliklinik randevusu' },
       { sicilNo: 'PER-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ', mazeretTuru: 'İdari İzin', mazeretNotu: 'Saha denetimi' },
-      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-1150', adSoyad: 'Caner Şahin', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+      { sicilNo: 'PER-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
     ],
     'Saha Otomasyon Birimi': [
       { sicilNo: 'PER-2011', adSoyad: 'Murat Öztürk', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-2034', adSoyad: 'Serhat Arslan', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-2090', adSoyad: 'Emre Yıldız', girisSaati: '08:00', cikisSaati: '12:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI', mazeretTuru: 'Sıhhi İzin', mazeretNotu: 'Revir sevki' }
-    ],
-    'Mekanik Bakım Birimi': [
-      { sicilNo: 'PER-3001', adSoyad: 'Hasan Yurt', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
-      { sicilNo: 'PER-3012', adSoyad: 'İbrahim Güneş', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
+      { sicilNo: 'PER-2034', adSoyad: 'Serhat Arslan', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
     ]
   };
 
@@ -120,8 +117,6 @@ export class AppComponent implements OnInit {
 
     if (this.secilenMudurluk === 'Yazılım ve Otomasyon Müdürlüğü') {
       this.basmuhendislikler = ['Backend Yazılım Başmühendisliği', 'Endüstriyel Veri Başmühendisliği'];
-    } else if (this.secilenMudurluk === 'Bakım Onarım Müdürlüğü') {
-      this.basmuhendislikler = ['Saha Bakım Başmühendisliği', 'Mekanik Bakım Başmühendisliği'];
     } else {
       this.basmuhendislikler = ['Genel Hizmetler Başmühendisliği'];
     }
@@ -133,8 +128,6 @@ export class AppComponent implements OnInit {
 
     if (this.secilenBasmuhendislik === 'Backend Yazılım Başmühendisliği') {
       this.bolumler = ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'];
-    } else if (this.secilenBasmuhendislik === 'Mekanik Bakım Başmühendisliği') {
-      this.bolumler = ['Mekanik Bakım Birimi'];
     } else {
       this.bolumler = ['Standart Çalışma Birimi'];
     }
@@ -166,6 +159,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Takılma Sorunu Düzeltilen Kaydetme Metodu
   topluKaydet() {
     if (this.personelListesi.length === 0) {
       alert('Kaydedilecek personel verisi bulunamadı!');
@@ -174,15 +168,23 @@ export class AppComponent implements OnInit {
 
     this.isSaving = true;
 
+    // 600ms sonra kaydetmeyi tamamlayıp toast bildirimini açar
     setTimeout(() => {
       this.isSaving = false;
-      this.toastMessage = `${this.secilenTarih} tarihli bölüm puantajı ve mazeret kayıtları başarıyla kaydedildi!`;
+      this.toastMessage = `${this.secilenTarih} tarihli ${this.personelListesi.length} personelin puantajı başarıyla kaydedildi!`;
       this.showSuccessToast = true;
 
       setTimeout(() => {
         this.showSuccessToast = false;
-      }, 4000);
-    }, 1000);
+      }, 3500);
+    }, 600);
+  }
+
+  // Kişiye Özel Aylık Detaya Gitme Metodu
+  personelAylikDetayGit(p: Personel) {
+    this.seciliPersonel = p;
+    this.generate30GunlukPuantaj();
+    this.aktifSekme = 'aylik';
   }
 
   generate30GunlukPuantaj() {
@@ -227,6 +229,8 @@ export class AppComponent implements OnInit {
         not: not
       });
     }
+
+    this.aylikOzetHesapla();
   }
 
   aylikOzetHesapla() {
@@ -243,6 +247,7 @@ export class AppComponent implements OnInit {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.aylikPuantajListesi);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Aylık Puantaj');
-    XLSX.writeFile(wb, `Puantaj_Raporu_2026_08.xlsx`);
+    const isim = this.seciliPersonel ? this.seciliPersonel.adSoyad.replace(' ', '_') : 'Genel';
+    XLSX.writeFile(wb, `Puantaj_${isim}_2026_08.xlsx`);
   }
 }

@@ -112,6 +112,7 @@
                   <th>Otomatik Durum</th>
                   <th>Mazeret Türü</th>
                   <th>Mazeret / Vardiya Notu</th>
+                  <th>İşlem</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,9 +147,15 @@
                   <td>
                     <input type="text" class="form-control-sm" [(ngModel)]="p.mazeretNotu" placeholder="Not veya mazeret açıklaması..." />
                   </td>
+                  <td>
+                    <!-- Personelin Aylık Puantajına Gitme Butonu -->
+                    <button class="btn-sm-action" (click)="personelAylikDetayGit(p)">
+                      📊 Aylık Detay
+                    </button>
+                  </td>
                 </tr>
                 <tr *ngIf="personelListesi.length === 0">
-                  <td colspan="7" class="text-center text-muted py-4">
+                  <td colspan="8" class="text-center text-muted py-4">
                     Lütfen yukarıdan Organizasyon ve Bölüm seçiniz.
                   </td>
                 </tr>
@@ -189,7 +196,12 @@
       <!-- 30 Günlük Hareket Tablosu -->
       <div class="card">
         <div class="card-header card-header-flex">
-          <h3>📊 İK 30 Günlük Aylık Puantaj Düzenleme Cetveli</h3>
+          <h3>
+            📊 30 Günlük Puantaj Cetveli 
+            <span *ngIf="seciliPersonel" style="color: #2563eb; font-weight: 700; margin-left: 8px;">
+              ({{ seciliPersonel.adSoyad }} - {{ seciliPersonel.sicilNo }})
+            </span>
+          </h3>
           <button class="btn-green" (click)="excelIndir()">
             📄 Excel Çıktı Al (.xlsx)
           </button>
