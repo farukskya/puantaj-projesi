@@ -1,37 +1,30 @@
 <!-- LOGIN EKRANI -->
-<div class="login-wrapper" *ngIf="!isLoggedIn">
+<div class="login-wrapper" *ngIf="!isLoggedIn" [class.dark-theme]="isDarkMode">
   <div class="login-card">
     <div class="login-header">
-      <div class="logo-circle">🏢</div>
-      <h2>Puantaj Portal</h2>
-      <p>Kurumsal İK & Vardiya Yönetim Sistemi</p>
+      <span class="brand-icon">🏢</span>
+      <h2>Puantaj Portal Girişi</h2>
+      <p>Lütfen Sicil Numaranız ve Şifreniz ile giriş yapınız.</p>
     </div>
     <div class="login-body">
       <div class="form-group mb-3">
-        <label>SİCİL NUMARASI</label>
-
-        <div class="input-with-icon">
-          <span class="input-icon">🆔</span>
-          <input type="text" class="form-control" [(ngModel)]="loginSicil" placeholder="Örn: ADMIN veya PER-1021" />
-        </div>
+        <label>SİCİL NO</label>
+        <input type="text" class="form-control" [(ngModel)]="loginSicil" placeholder="Örn: ADMIN veya PER-1021" />
       </div>
-      <div class="form-group mb-4">
-        <label>GİRİŞ ŞİFRESİ</label>
-        <div class="input-with-icon">
-          <span class="input-icon">🔒</span>
-          <input type="password" class="form-control" [(ngModel)]="loginSifre" placeholder="Şifreniz (Varsayılan: 1234)" (keyup.enter)="girisYap()" />
-        </div>
+      <div class="form-group mb-3">
+        <label>ŞİFRE</label>
+        <input type="password" class="form-control" [(ngModel)]="loginSifre" placeholder="Şifreniz (Varsayılan: 1234)" (keyup.enter)="girisYap()" />
       </div>
       <div class="alert alert-danger" *ngIf="loginHata">
         {{ loginHata }}
       </div>
-      <button class="btn-login" (click)="girisYap()">Sisteme Giriş Yap ➔</button>
+      <button class="btn-navy w-100" (click)="girisYap()">🔐 Giriş Yap</button>
     </div>
   </div>
 </div>
 
 <!-- UYGULAMA ARAYÜZÜ -->
-<div class="layout-wrapper" *ngIf="isLoggedIn">
+<div class="layout-wrapper" *ngIf="isLoggedIn" [class.dark-theme]="isDarkMode">
   <!-- Sol Menü -->
   <aside class="sidebar">
     <div class="brand">
@@ -56,6 +49,9 @@
       </button>
       <button class="nav-item" [class.active]="aktifSekme === 'profil'" (click)="aktifSekme = 'profil'">
         👤 Profilim
+      </button>
+      <button class="nav-item btn-theme-toggle" (click)="toggleDarkMode()">
+        {{ isDarkMode ? '☀️ Aydınlık Mod' : '🌙 Koyu Mod' }}
       </button>
       <button class="nav-item btn-logout" (click)="cikisYap()">
         🚪 Güvenli Çıkış
@@ -143,10 +139,9 @@
           <h3>👥 Bölüm Çalışanları ve Puantaj Durumları</h3>
           
           <div class="header-actions">
-            <!-- Şık Arama Kutusu -->
-            <div class="pretty-search">
-              <span class="search-icon">🔍</span>
-              <input type="text" class="pretty-search-input" [(ngModel)]="aramaMetni" placeholder="Personel ismi veya sicil no ile ara..." />
+            <!-- Arama Kutusu -->
+            <div class="search-box">
+              <input type="text" class="form-control-search" [(ngModel)]="aramaMetni" placeholder="🔍 Personel ara (Ad/Sicil)..." />
             </div>
 
             <button class="btn-navy" (click)="topluKaydet()" [disabled]="isSaving || personelListesi.length === 0">
@@ -310,26 +305,26 @@
       </div>
     </div>
 
-    <!-- 3. PROFİL DÜZENLEME EKRANI (SADECE ŞİFRE) -->
+    <!-- 3. PROFİL DÜZENLEME EKRANI -->
     <div *ngIf="aktifSekme === 'profil'">
       <div class="card max-w-600">
         <div class="card-header">
-          <h3>🔒 Güvenlik ve Şifre Ayarları</h3>
+          <h3>👤 Profil ve Güvenlik Ayarları</h3>
         </div>
         <div class="card-body">
           <div class="form-group mb-3">
-            <label>SİCİL NUMARASI</label>
+            <label>SİCİL NUMARASI (DEĞİŞTİRİLEMEZ)</label>
             <input type="text" class="form-control" [value]="currentUser?.sicilNo" disabled />
           </div>
           <div class="form-group mb-3">
-            <label>AD SOYAD (KİLİTLİ)</label>
-            <input type="text" class="form-control" [value]="currentUser?.adSoyad" disabled />
+            <label>AD SOYAD</label>
+            <input type="text" class="form-control" [(ngModel)]="profilAdSoyad" />
           </div>
           <div class="form-group mb-3">
-            <label>YENİ GİRİŞ ŞİFRESİ</label>
-            <input type="password" class="form-control" [(ngModel)]="profilSifre" placeholder="Yeni şifrenizi giriniz..." />
+            <label>GİRİŞ ŞİFRESİ</label>
+            <input type="password" class="form-control" [(ngModel)]="profilSifre" />
           </div>
-          <button class="btn-navy w-100 mt-2" (click)="profilKaydet()">🔑 Şifreyi Güncelle</button>
+          <button class="btn-navy w-100 mt-2" (click)="profilKaydet()">💾 Değişiklikleri Kaydet</button>
         </div>
       </div>
     </div>

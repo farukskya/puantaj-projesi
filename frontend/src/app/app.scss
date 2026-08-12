@@ -1,236 +1,137 @@
 /* ==========================================
-   GLOBAL VE TEMEL DÜZEN
+   GENEL TEMEL STİLLER (KARDEMİR TEMASI)
    ========================================== */
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f1f5f9;
+  color: #334155;
 }
 
 /* ==========================================
-   ŞIK LOGIN EKRANI
-   ========================================== */
-.login-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  padding: 20px;
-}
-
-.login-card {
-  background: #ffffff;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 400px;
-  padding: 36px 30px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-
-  .login-header {
-    text-align: center;
-    margin-bottom: 28px;
-
-    .logo-circle {
-      width: 56px;
-      height: 56px;
-      background-color: #eff6ff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin: 0 auto 12px auto;
-    }
-
-    h2 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #0f172a;
-      margin: 0;
-    }
-
-    p {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 4px;
-    }
-  }
-}
-
-.input-with-icon {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  .input-icon {
-    position: absolute;
-    left: 12px;
-    font-size: 1rem;
-  }
-
-  .form-control {
-    padding-left: 38px;
-  }
-}
-
-.btn-login {
-  width: 100%;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-  }
-}
-
-/* ==========================================
-   LAYOUT VE İÇERİK
+   LAYOUT & SIDEBAR (SOL MENÜ DÜZENİ)
    ========================================== */
 .layout-wrapper {
   display: flex;
   min-height: 100vh;
+  width: 100%;
 }
 
 .sidebar {
   width: 260px;
-  background-color: #0f172a;
+  background-color: #0f172a; /* Koyu Lacivert */
+  color: #ffffff;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+  flex-shrink: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
 
-  .nav-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    height: 100%;
-  }
-
-  .nav-item {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s ease;
-
-    &:hover {
-      color: white;
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    &.active {
-      background-color: #2563eb;
-      color: white;
-    }
+  .brand-icon {
+    font-size: 1.5rem;
   }
 }
 
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &:hover {
+    background-color: #1e293b;
+    color: #f8fafc;
+  }
+
+  &.active {
+    background-color: #2563eb; /* Aktif Mavi */
+    color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+/* ==========================================
+   ANA İÇERİK ALANI VE KARTLAR
+   ========================================== */
 .content-area {
   flex: 1;
   padding: 24px;
+  background-color: #f8fafc;
   overflow-y: auto;
 }
 
-/* KARTLAR VE TABLOLAR */
 .card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: #ffffff;
   border-radius: 12px;
-  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  overflow: hidden;
 
   .card-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #e2e8f0;
-    h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+    padding: 18px 24px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
 
     &.card-header-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
     }
   }
 
-  .card-body { padding: 20px; }
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* HOŞ GÖRÜNEN ARAMA KUTUSU */
-.pretty-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  .search-icon {
-    position: absolute;
-    left: 12px;
-    font-size: 0.85rem;
-    color: #94a3b8;
-  }
-
-  .pretty-search-input {
-    background-color: #ffffff;
-    border: 1px solid #cbd5e1;
-    color: #0f172a;
-    padding: 8px 12px 8px 34px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    width: 240px;
-    transition: all 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-      width: 280px;
-    }
+  .card-body {
+    padding: 24px;
   }
 }
 
-.max-w-600 {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* FORMLAR VE TABLO ELAMANLARI */
+/* ==========================================
+   FORM GRID & INPUT STİLLERİ
+   ========================================== */
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
+  margin-bottom: 16px;
 }
 
 .form-group {
@@ -242,146 +143,338 @@ body {
     font-size: 0.75rem;
     font-weight: 700;
     color: #64748b;
+    letter-spacing: 0.5px;
   }
 }
 
 .form-control, .form-control-sm {
-  background-color: #ffffff;
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid #cbd5e1;
-  color: #0f172a;
-  padding: 8px 12px;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background-color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
 
   &:disabled {
     background-color: #f1f5f9;
-    opacity: 0.7;
     cursor: not-allowed;
+    opacity: 0.7;
   }
+}
+
+.form-control-sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  text-align: center;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  span {
+    padding: 0 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 1px;
+  }
+}
+
+/* ==========================================
+   TABLO STİLLERİ
+   ========================================== */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-
-  th, td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #e2e8f0;
-    text-align: left;
-    font-size: 0.85rem;
-  }
+  text-align: left;
+  font-size: 0.875rem;
 
   th {
-    color: #64748b;
+    background-color: #f8fafc;
+    color: #475569;
     font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+  }
+
+  tr.row-sunday {
+    background-color: #fef2f2; /* Pazar günleri hafif kırmızı */
+  }
+
+  tr.row-holiday {
+    background-color: #f0fdf4; /* Tatil günleri hafif yeşil */
   }
 }
 
+/* Rozetler (Badges) */
 .badge {
   display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
 
-  &.badge-success { background-color: #dcfce7; color: #15803d; }
-  &.badge-info { background-color: #dbeafe; color: #1d4ed8; }
-  &.badge-warning { background-color: #fef3c7; color: #b45309; }
-  &.badge-danger { background-color: #fee2e2; color: #b91c1c; }
+  &.badge-success {
+    background-color: #dcfce7;
+    color: #15803d;
+  }
+  &.badge-warning {
+    background-color: #fef9c3;
+    color: #a16207;
+  }
+  &.badge-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
 }
 
-/* İK İSTATİSTİK KARTLARI */
+/* ==========================================
+   BUTONLAR
+   ========================================== */
+.btn-navy {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #1e40af;
+  }
+
+  &:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+  }
+}
+
+.btn-green {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #059669;
+  }
+}
+
+/* ==========================================
+   İK ÖZET KARTLARI (30 GÜNLÜK TABLO ÜSTÜ)
+   ========================================== */
 .ik-summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .summary-card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: white;
   padding: 16px;
   border-radius: 10px;
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  .count { font-size: 1.25rem; font-weight: 800; }
-  .label { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+  .count {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
 
-  &.purple .count { color: #8b5cf6; }
+  .label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 4px;
+  }
+
   &.blue .count { color: #2563eb; }
   &.gray .count { color: #64748b; }
   &.green .count { color: #10b981; }
   &.orange .count { color: #f59e0b; }
+  &.red .count { color: #ef4444; }
 }
 
-/* KULLANICI ROLLERİ */
-.user-info-box {
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  .user-name { font-size: 0.85rem; font-weight: 600; color: white; margin: 0; }
-  .user-sicil { font-size: 0.75rem; color: #94a3b8; margin: 2px 0 0 0; }
-  .user-role-badge {
-    display: inline-block;
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-bottom: 6px;
-    
-    &.role-admin { background-color: #2563eb; color: white; }
-    &.role-isci { background-color: #10b981; color: white; }
-  }
-}
-
-.btn-navy {
-  background-color: #1e293b;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-green {
-  background-color: #059669;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-sm-action {
-  background-color: #e2e8f0;
-  color: #0f172a;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
-.btn-logout { margin-top: auto; color: #ef4444 !important; }
-
-/* TOAST BİLDİRİM */
+/* ==========================================
+   TOAST BİLDİRİMİ
+   ========================================== */
 .toast-notification {
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   background-color: #10b981;
   color: white;
-  padding: 12px 20px;
+  padding: 16px 24px;
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 9999;
+}
+.btn-sm-action {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+}
+/* ==========================================
+   MOBİL & TABLET UYUMLULUK (RESPONSIVE STYLES)
+   ========================================== */
+@media (max-width: 768px) {
+  /* 1. Ana Düzen: Dikey Sıralama */
+  .layout-wrapper {
+    flex-direction: column;
+  }
+
+  /* 2. Sol Menü -> Üst Üst Navigasyon Çubuğu */
+  .sidebar {
+    width: 100%;
+    padding: 12px 16px;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .brand {
+      padding-bottom: 8px;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .nav-menu {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .nav-item {
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+
+  /* 3. İçerik Alanı Padding Düzeltmesi */
+  .content-area {
+    padding: 12px;
+  }
+
+  .card {
+    margin-bottom: 16px;
+
+    .card-header {
+      padding: 12px 16px;
+
+      h3 {
+        font-size: 0.95rem;
+      }
+
+      &.card-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+
+    .card-body {
+      padding: 12px;
+    }
+  }
+
+  /* 4. Form Elemanlarını Tek Sütuna Düşürme */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* 5. İK Sayaç Kartlarını 2'li Grid Yapma */
+  .ik-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+
+    .summary-card {
+      padding: 10px;
+
+      .count {
+        font-size: 1.2rem;
+      }
+
+      .label {
+        font-size: 0.7rem;
+        text-align: center;
+      }
+    }
+  }
+
+  /* 6. Mobil Tablo Ayarları ve Dokunmatik Kaydırma */
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* iOS pürüzsüz kaydırma */
+  }
+
+  .custom-table {
+    min-width: 650px; /* Tablo içeriğinin ezilmesini önler */
+    
+    th, td {
+      padding: 8px 10px;
+      font-size: 0.8rem;
+    }
+
+    .form-control-sm {
+      min-width: 90px;
+    }
+  }
 }
