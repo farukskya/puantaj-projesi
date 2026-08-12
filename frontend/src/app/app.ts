@@ -39,12 +39,9 @@ export class AppComponent implements OnInit {
   loginHata: string = '';
   currentUser: Personel | null = null;
 
-  isDarkMode: boolean = false;
   aramaMetni: string = '';
-
   aktifSekme: 'gunluk' | 'aylik' | 'profil' = 'gunluk';
 
-  // Sadece Şifre Değişimi İçin
   profilSifre: string = '';
 
   secilenTarih: string = '2026-08-12';
@@ -93,10 +90,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.generate30GunlukPuantaj();
-  }
-
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
   }
 
   get filtrelenmisPersoneller(): Personel[] {

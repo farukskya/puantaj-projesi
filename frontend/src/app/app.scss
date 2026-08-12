@@ -1,30 +1,11 @@
 /* ==========================================
-   GLOBAL DEĞİŞKENLER VE TEMALAR
+   GLOBAL VE TEMEL DÜZEN
    ========================================== */
-:root {
-  --bg-primary: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-sidebar: #0f172a;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --input-bg: #ffffff;
-}
-
-/* KOYU MOD DEĞİŞKENLERİ */
-.dark-theme {
-  --bg-primary: #090d16;
-  --bg-card: #151d2a;
-  --bg-sidebar: #0a0f1d;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --border-color: #263346;
-  --input-bg: #0f172a;
-}
-
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 /* ==========================================
@@ -37,21 +18,15 @@ body {
   min-height: 100vh;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   padding: 20px;
-
-  &.dark-theme {
-    background: linear-gradient(135deg, #050811 0%, #0d1322 100%);
-  }
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: #ffffff;
   border-radius: 16px;
   width: 100%;
   max-width: 400px;
   padding: 36px 30px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
 
   .login-header {
     text-align: center;
@@ -67,7 +42,6 @@ body {
       justify-content: center;
       font-size: 1.8rem;
       margin: 0 auto 12px auto;
-      color: #2563eb;
     }
 
     h2 {
@@ -83,15 +57,6 @@ body {
       margin-top: 4px;
     }
   }
-}
-
-.dark-theme .login-card {
-  background: #151d2a;
-  border-color: #263346;
-
-  .login-header h2 { color: #f8fafc; }
-  .login-header p { color: #94a3b8; }
-  .login-header .logo-circle { background-color: #1e293b; }
 }
 
 .input-with-icon {
@@ -135,14 +100,11 @@ body {
 .layout-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .sidebar {
   width: 260px;
-  background-color: var(--bg-sidebar);
+  background-color: #0f172a;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
@@ -198,15 +160,15 @@ body {
 
 /* KARTLAR VE TABLOLAR */
 .card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   .card-header {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e2e8f0;
     h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
 
     &.card-header-flex {
@@ -219,6 +181,12 @@ body {
   }
 
   .card-body { padding: 20px; }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* HOŞ GÖRÜNEN ARAMA KUTUSU */
@@ -235,9 +203,9 @@ body {
   }
 
   .pretty-search-input {
-    background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
     padding: 8px 12px 8px 34px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -251,6 +219,11 @@ body {
       width: 280px;
     }
   }
+}
+
+.max-w-600 {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* FORMLAR VE TABLO ELAMANLARI */
@@ -268,20 +241,21 @@ body {
   label {
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--text-muted);
+    color: #64748b;
   }
 }
 
 .form-control, .form-control-sm {
-  background-color: var(--input-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
 
   &:disabled {
-    opacity: 0.6;
+    background-color: #f1f5f9;
+    opacity: 0.7;
     cursor: not-allowed;
   }
 }
@@ -292,13 +266,13 @@ body {
 
   th, td {
     padding: 12px 14px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e2e8f0;
     text-align: left;
     font-size: 0.85rem;
   }
 
   th {
-    color: var(--text-muted);
+    color: #64748b;
     font-weight: 600;
   }
 }
@@ -325,8 +299,8 @@ body {
 }
 
 .summary-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   padding: 16px;
   border-radius: 10px;
   display: flex;
@@ -334,7 +308,7 @@ body {
   align-items: center;
 
   .count { font-size: 1.25rem; font-weight: 800; }
-  .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  .label { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
 
   &.purple .count { color: #8b5cf6; }
   &.blue .count { color: #2563eb; }
@@ -388,8 +362,8 @@ body {
 }
 
 .btn-sm-action {
-  background-color: var(--border-color);
-  color: var(--text-main);
+  background-color: #e2e8f0;
+  color: #0f172a;
   border: none;
   padding: 4px 8px;
   border-radius: 4px;
@@ -398,7 +372,6 @@ body {
 }
 
 .btn-logout { margin-top: auto; color: #ef4444 !important; }
-.btn-theme-toggle { background-color: rgba(255, 255, 255, 0.08) !important; }
 
 /* TOAST BİLDİRİM */
 .toast-notification {

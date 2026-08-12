@@ -1,5 +1,5 @@
-<!-- YENİ MODERN LOGIN EKRANI -->
-<div class="login-wrapper" *ngIf="!isLoggedIn" [class.dark-theme]="isDarkMode">
+<!-- LOGIN EKRANI -->
+<div class="login-wrapper" *ngIf="!isLoggedIn">
   <div class="login-card">
     <div class="login-header">
       <div class="logo-circle">🏢</div>
@@ -31,7 +31,7 @@
 </div>
 
 <!-- UYGULAMA ARAYÜZÜ -->
-<div class="layout-wrapper" *ngIf="isLoggedIn" [class.dark-theme]="isDarkMode">
+<div class="layout-wrapper" *ngIf="isLoggedIn">
   <!-- Sol Menü -->
   <aside class="sidebar">
     <div class="brand">
@@ -56,9 +56,6 @@
       </button>
       <button class="nav-item" [class.active]="aktifSekme === 'profil'" (click)="aktifSekme = 'profil'">
         👤 Profilim
-      </button>
-      <button class="nav-item btn-theme-toggle" (click)="toggleDarkMode()">
-        {{ isDarkMode ? '☀️ Aydınlık Mod' : '🌙 Koyu Mod' }}
       </button>
       <button class="nav-item btn-logout" (click)="cikisYap()">
         🚪 Güvenli Çıkış
