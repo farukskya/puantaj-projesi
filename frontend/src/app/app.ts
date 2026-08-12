@@ -1,307 +1,196 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
+
+interface Personel {
+  sicilNo: string;
+  adSoyad: string;
+  girisSaati: string;
+  cikisSaati: string;
+  durum: string;
+  durumMetni: string;
+  mazeretTuru: string;
+  mazeretNotu: string;
+}
+
+interface GunlukPuantaj {
+  tarih: string;
+  gunAdi: string;
+  durum: string;
+  girisSaati: string;
+  cikisSaati: string;
+  not: string;
+}
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss']
 })
-export class App {
-  aktifSekme: string = 'gunluk';
+export class AppComponent implements OnInit {
+  aktifSekme: 'gunluk' | 'aylik' = 'gunluk';
 
-  secilenTarih: string = '2026-08-07';
-  genelPlanlananVardiya: string = '08:00-16:00';
+  // Seçim Değişkenleri
+  secilenTarih: string = '2026-08-12';
+  secilenVardiya: string = '08:00 - 16:00';
   secilenAmir: string = '';
-
   secilenDirektorlik: string = '';
   secilenMudurluk: string = '';
   secilenBasmuhendislik: string = '';
   secilenBolum: string = '';
 
-  secilenAylikPersonelSicil: string = '1001';
-  secilenAylikPersonelAd: string = 'Personel A';
-  secilenAylikTarih: string = '2026-08';
-  secilenAyVeYilYazisi: string = 'Ağustos 2026';
+  // Kayıt ve Bildirim Durumları
+  isSaving: boolean = false;
+  showSuccessToast: boolean = false;
+  toastMessage: string = '';
 
-  otuzGunlukPuantaj: any[] = [];
+  // İK Özet Sayaçları
+  toplamFiiliCalisma: number = 0;
+  toplamHaftaIzni: number = 0;
+  toplamResmiTatil: number = 0;
+  toplamMazeret: number = 0;
+  toplamDevamsiz: number = 0;
 
-  amirler = [
-    { sicilNo: '5001', adSoyad: 'Amir A' },
-    { sicilNo: '5002', adSoyad: 'Amir B' }
-  ];
+  // Hiyerarşik Seçenekler
+  direktorlikler: string[] = ['İnsan Kaynakları ve İdari İşler', 'Demir Çelik Üretim Direktörlüğü', 'Mühendislik & Otomasyon Direktörlüğü'];
+  mudurlukler: string[] = [];
+  basmuhendislikler: string[] = [];
+  bolumler: string[] = [];
 
-  direktorlikler = [
-    { id: 'DIR_1', ad: '1. Üretim Direktörlüğü' },
-    { id: 'DIR_2', ad: '2. Teknik Direktörlük' }
-  ];
+  personelListesi: Personel[] = [];
+  aylikPuantajListesi: GunlukPuantaj[] = [];
 
-  mudurlukler: any[] = [];
-  basmuhendislikler: any[] = [];
-  bolumler: any[] = [];
-  personelListesi: any[] = [];
-
-  constructor() {
-    this.aylikTarihDegisti();
-  }
-  ozetOzet = {
-    fiiliCalisilanGun: 0,
-    haftaIzniGun: 0,
-    resmiTatilGun: 0,
-    toplamFazlaMesai: 0,
-    raporVeIzinGun: 0
-  };
-
-  sekmeDegistir(sekme: string) {
-    this.aktifSekme = sekme;
+  ngOnInit() {
+    this.generate30GunlukPuantaj();
+    this.aylikOzetHesapla();
   }
 
-  aylikPuantajSayfasinaGit(personel: any) {
-    this.secilenAylikPersonelSicil = personel.sicilNo;
-    this.secilenAylikPersonelAd = personel.adSoyad;
-    this.aylikTarihDegisti();
-    this.aktifSekme = 'aylik';
-  }
-
-  aylikPersonelDegisti() {
-    if (this.secilenAylikPersonelSicil === '1001') this.secilenAylikPersonelAd = 'Personel A';
-    if (this.secilenAylikPersonelSicil === '1002') this.secilenAylikPersonelAd = 'Personel B';
-    if (this.secilenAylikPersonelSicil === '1003') this.secilenAylikPersonelAd = 'Personel C';
-    this.aylikTarihDegisti();
-  }
-
-  aylikTarihDegisti() {
-    if (this.secilenAylikTarih) {
-      const parcalar = this.secilenAylikTarih.split('-');
-      const yil = parseInt(parcalar[0], 10);
-      const ay = parseInt(parcalar[1], 10);
-
-      const ayIsimleri = [
-        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-        'Temmuz', 'Ağustos', 'Eylul', 'Ekim', 'Kasım', 'Aralık'
-      ];
-
-      this.secilenAyVeYilYazisi = `${ayIsimleri[ay - 1]} ${yil}`;
-      this.generate30GunlukPuantaj(yil, ay);
-    }
-  }
-
-  generate30GunlukPuantaj(yil: number, ay: number) {
-  const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-  this.otuzGunlukPuantaj = [];
-
-  // 1. HER AY DEĞİŞTİĞİNDE SAYAÇLARI SIFIRLIYORUZ
-  this.ozetOzet = {
-    fiiliCalisilanGun: 0,
-    haftaIzniGun: 0,
-    resmiTatilGun: 0,
-    toplamFazlaMesai: 0,
-    raporVeIzinGun: 0
-  };
-
-  const toplamGun = new Date(yil, ay, 0).getDate();
-
-  for (let i = 1; i <= toplamGun; i++) {
-    const tarihObj = new Date(yil, ay - 1, i);
-    const gunAdi = gunler[tarihObj.getDay()];
-
-    let durum = 'NORMAL ÇALIŞMA';
-    let giris = '08:00';
-    let cikis = '16:00';
-    let calisilanSaat = 8;
-    let fazlaMesai = 0;
-    let aciklama = '';
-
-    if (gunAdi === 'Pazar') {
-      durum = 'HAFTA İZNİ';
-      giris = '';
-      cikis = '';
-      calisilanSaat = 0;
-      aciklama = 'Haftalık dinlenme günü';
-    } else if (ay === 7 && i === 15) {
-      durum = 'RESMİ TATİL';
-      giris = '';
-      cikis = '';
-      calisilanSaat = 0;
-      aciklama = '15 Temmuz Demokrasi Bayramı';
-    } else if (ay === 8 && i === 30) {
-      durum = 'RESMİ TATİL';
-      giris = '';
-      cikis = '';
-      calisilanSaat = 0;
-      aciklama = '30 Ağustos Zafer Bayramı';
-    }
-
-    // 2. DÖNGÜ İÇİNDE GÜNÜN DURUMUNA GÖRE SAYACI +1 ARTIRIYORUZ
-    if (durum === 'NORMAL ÇALIŞMA' || durum.includes('MESAİ')) {
-      this.ozetOzet.fiiliCalisilanGun++;
-    } else if (durum === 'HAFTA İZNİ') {
-      this.ozetOzet.haftaIzniGun++;
-    } else if (durum === 'RESMİ TATİL') {
-      this.ozetOzet.resmiTatilGun++;
-    } else if (durum.includes('RAPOR') || durum.includes('İZNİ') || durum.includes('SEVK')) {
-      this.ozetOzet.raporVeIzinGun++;
-    }
-
-    this.ozetOzet.toplamFazlaMesai += fazlaMesai;
-
-    const ayFormatli = ay < 10 ? '0' + ay : ay;
-    const gunFormatli = i < 10 ? '0' + i : i;
-
-    this.otuzGunlukPuantaj.push({
-      gunNo: i,
-      tarih: `${gunFormatli}.${ayFormatli}.${yil}`,
-      gunAdi: gunAdi,
-      vardiya: calisilanSaat > 0 ? '08:00-16:00' : 'OFF',
-      giris: giris,
-      cikis: cikis,
-      calisilanSaat: calisilanSaat,
-      fazlaMesai: fazlaMesai,
-      durum: durum,
-      aciklama: aciklama
-    });
-  }
-}
-excelIndir() {
-  console.log('Excel indirme metodu tetiklendi.'); // Test için konsol logu
-
-  if (!this.otuzGunlukPuantaj || this.otuzGunlukPuantaj.length === 0) {
-    alert('İndirilecek puantaj verisi bulunamadı!');
-    return;
-  }
-
-  // Excel tablo kolonlarını ve veriyi hazırlıyoruz
-  const excelVerisi = this.otuzGunlukPuantaj.map(g => ({
-    'Gün No': g.gunNo,
-    'Tarih': g.tarih,
-    'Gün': g.gunAdi,
-    'Vardiya': g.vardiya,
-    'Giriş Saati': g.giris || '-',
-    'Çıkış Saati': g.cikis || '-',
-    'Çalışılan Saat': g.calisilanSaat,
-    'Fazla Mesai (Saat)': g.fazlaMesai,
-    'Durum / İzin Tipi': g.durum,
-    'Açıklama': g.aciklama || '-'
-  }));
-
-  try {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelVerisi);
-    const workbook: XLSX.WorkBook = { 
-      Sheets: { 'Aylık Puantaj': worksheet }, 
-      SheetNames: ['Aylık Puantaj'] 
-    };
-
-    const dosyaAdi = `Puantaj_${this.secilenAylikPersonelAd.replace(/\s+/g, '_')}_${this.secilenAylikTarih}.xlsx`;
-    
-    // Dosyayı indirmeyi tetikle
-    XLSX.writeFile(workbook, dosyaAdi);
-  } catch (error) {
-    console.error('Excel indirilirken hata oluştu:', error);
-    alert('Excel dosyası oluşturulurken bir hata oluştu. Konsolu kontrol ediniz.');
-  }
-}
-
-onDirektorlikChange() {
+  // Hiyerarşik Açılır Menü Değişim Olayları
+  onDirektorlikChange() {
     this.secilenMudurluk = '';
     this.secilenBasmuhendislik = '';
     this.secilenBolum = '';
+    this.mudurlukler = this.secilenDirektorlik ? ['Yazılım ve Otomasyon Müdürlüğü', 'Sistem ve Ağ Yönetimi Müdürlüğü'] : [];
+    this.basmuhendislikler = [];
+    this.bolumler = [];
     this.personelListesi = [];
-
-    if (this.secilenDirektorlik === 'DIR_1') {
-      this.mudurlukler = [
-        { id: 'MUD_1', ad: 'Haddehane Müdürlüğü' },
-        { id: 'MUD_2', ad: 'Çelikhane Müdürlüğü' }
-      ];
-    } else if (this.secilenDirektorlik === 'DIR_2') {
-      this.mudurlukler = [
-        { id: 'MUD_3', ad: 'Bakım Onarım Müdürlüğü' }
-      ];
-    } else {
-      this.mudurlukler = [];
-    }
   }
 
   onMudurlukChange() {
     this.secilenBasmuhendislik = '';
     this.secilenBolum = '';
+    this.basmuhendislikler = this.secilenMudurluk ? ['Backend Yazılım Başmühendisliği', 'Endüstriyel Veri Başmühendisliği'] : [];
+    this.bolumler = [];
     this.personelListesi = [];
-
-    this.basmuhendislikler = [
-      { id: 'BAS_1', ad: 'İşletme Başmühendisliği' },
-      { id: 'BAS_2', ad: 'Mekanik Başmühendisliği' }
-    ];
   }
 
   onBasmuhendislikChange() {
     this.secilenBolum = '';
+    this.bolumler = this.secilenBasmuhendislik ? ['Puantaj ve İK Sistemleri Birimi', 'Saha Otomasyon Birimi'] : [];
     this.personelListesi = [];
-
-    this.bolumler = [
-      { id: 'BOL_1', ad: 'Fırın Bölümü' },
-      { id: 'BOL_2', ad: 'Hat & Haddeleme Bölümü' }
-    ];
   }
 
   onBolumChange() {
     if (this.secilenBolum) {
       this.personelListesi = [
-        { sicilNo: '1001', adSoyad: 'Personel A', girisSaati: '08:00', cikisSaati: '16:00', otomatikDurum: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretAciklamasi: '' },
-        { sicilNo: '1002', adSoyad: 'Personel B', girisSaati: '08:00', cikisSaati: '16:00', otomatikDurum: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretAciklamasi: '' },
-        { sicilNo: '1003', adSoyad: 'Personel C', girisSaati: '08:00', cikisSaati: '16:00', otomatikDurum: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretAciklamasi: '' }
+        { sicilNo: 'KARD-1021', adSoyad: 'Ahmet Yılmaz', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' },
+        { sicilNo: 'KARD-1045', adSoyad: 'Mehmet Demir', girisSaati: '08:00', cikisSaati: '14:00', durum: 'ERKEN_CIKTI', durumMetni: 'ERKEN ÇIKTI (2 Saat Eksik)', mazeretTuru: 'Doktor Sevk', mazeretNotu: 'Hastane sevk kağıdı İK’ya teslim edildi.' },
+        { sicilNo: 'KARD-1088', adSoyad: 'Mustafa Kaya', girisSaati: '08:15', cikisSaati: '16:00', durum: 'EKSİK_KART', durumMetni: 'GEÇ GELDİ / EKSİK KART', mazeretTuru: '', mazeretNotu: '' },
+        { sicilNo: 'KARD-1102', adSoyad: 'Ayşe Çelik', girisSaati: '08:00', cikisSaati: '16:00', durum: 'NORMAL', durumMetni: 'NORMAL (8 Saat)', mazeretTuru: '', mazeretNotu: '' }
       ];
     } else {
       this.personelListesi = [];
     }
   }
 
-  onVardiyaTipiChange() {
-    let baslangic = '08:00';
-    let bitis = '16:00';
-
-    if (this.genelPlanlananVardiya === '16:00-24:00') {
-      baslangic = '16:00';
-      bitis = '00:00';
-    } else if (this.genelPlanlananVardiya === '24:00-08:00') {
-      baslangic = '00:00';
-      bitis = '08:00';
+  // Durum Hesaplayıcı
+  hesaplaDurum(p: Personel) {
+    if (p.girisSaati === '08:00' && p.cikisSaati === '16:00') {
+      p.durum = 'NORMAL';
+      p.durumMetni = 'NORMAL (8 Saat)';
+    } else if (p.cikisSaati < '16:00') {
+      p.durum = 'ERKEN_CIKTI';
+      p.durumMetni = 'ERKEN ÇIKTI';
+    } else {
+      p.durum = 'EKSİK_KART';
+      p.durumMetni = 'GİRİŞ/ÇIKIŞ FARKLI';
     }
-
-    this.personelListesi.forEach(p => {
-      p.girisSaati = baslangic;
-      p.cikisSaati = bitis;
-      p.otomatikDurum = 'NORMAL (8 Saat)';
-    });
   }
 
-  hesaplaDurum(p: any) {
-    if (!p.girisSaati && !p.cikisSaati) {
-      p.otomatikDurum = 'GELMEDİ (DEVAMSIZ)';
+  // Toplu Kaydetme
+  topluKaydet() {
+    if (this.personelListesi.length === 0) {
+      alert('Kaydedilecek personel verisi bulunamadı!');
       return;
     }
 
-    if (p.girisSaati && p.cikisSaati) {
-      const gSaat = parseInt(p.girisSaati.split(':')[0], 10);
-      const cSaat = parseInt(p.cikisSaati.split(':')[0], 10);
-      let fark = cSaat - gSaat;
-      if (fark < 0) fark += 24;
+    this.isSaving = true;
 
-      if (fark === 8) {
-        p.otomatikDurum = 'NORMAL (8 Saat)';
-        p.mazeretTuru = '';
-      } else if (fark > 8) {
-        p.otomatikDurum = `FAZLA MESAİ (+${fark - 8} Saat)`;
-      } else {
-        p.otomatikDurum = `ERKEN ÇIKTI (${8 - fark} Saat Eksik)`;
+    setTimeout(() => {
+      this.isSaving = false;
+      this.toastMessage = `${this.secilenTarih} tarihli bölüm puantajı ve mazeret kayıtları başarıyla kaydedildi!`;
+      this.showSuccessToast = true;
+
+      setTimeout(() => {
+        this.showSuccessToast = false;
+      }, 4000);
+    }, 1000);
+  }
+
+  // 30 Günlük Puantaj Cetveli Üretici
+  generate30GunlukPuantaj() {
+    const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+    this.aylikPuantajListesi = [];
+
+    for (let i = 1; i <= 30; i++) {
+      const gunIndex = (i + 4) % 7; // Ağustos 2026 örnek gün döngüsü
+      const gunAdi = gunler[gunIndex];
+      let durum = 'NORMAL';
+      let giris = '08:00';
+      let cikis = '16:00';
+      let not = '';
+
+      if (gunAdi === 'Pazar') {
+        durum = 'HAFTA_IZNI';
+        giris = '-';
+        cikis = '-';
+      } else if (i === 30) {
+        durum = 'RESMI_TATIL';
+        giris = '-';
+        cikis = '-';
+        not = '30 Ağustos Zafer Bayramı';
       }
-    } else {
-      p.otomatikDurum = 'EKSİK KART BASIMI';
+
+      this.aylikPuantajListesi.push({
+        tarih: `2026-08-${i < 10 ? '0' + i : i}`,
+        gunAdi: gunAdi,
+        durum: durum,
+        girisSaati: giris,
+        cikisSaati: cikis,
+        not: not
+      });
     }
   }
 
-  topluKaydet() {
-    alert('Bölüm puantajı ve mazeret kayıtları başarıyla kaydedildi!');
+  // Aylık Özet Hesaplama Metodu
+  aylikOzetHesapla() {
+    if (!this.aylikPuantajListesi) return;
+
+    this.toplamFiiliCalisma = this.aylikPuantajListesi.filter(g => g.durum === 'NORMAL' || g.durum === 'FAZLA_MESAI').length;
+    this.toplamHaftaIzni = this.aylikPuantajListesi.filter(g => g.durum === 'HAFTA_IZNI').length;
+    this.toplamResmiTatil = this.aylikPuantajListesi.filter(g => g.durum === 'RESMI_TATIL').length;
+    this.toplamMazeret = this.aylikPuantajListesi.filter(g => g.durum === 'MAZERETLI').length;
+    this.toplamDevamsiz = this.aylikPuantajListesi.filter(g => g.durum === 'DEVAMSIZ').length;
+  }
+
+  // Excel Dışa Aktarımı (.xlsx)
+  excelIndir() {
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.aylikPuantajListesi);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Aylık Puantaj');
+    XLSX.writeFile(wb, `Puantaj_Raporu_2026_08.xlsx`);
   }
 }
