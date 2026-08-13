@@ -377,16 +377,17 @@ body {
   }
 }
 
-/* BUTONLAR */
 .btn-navy {
   background-color: #1e293b;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 18px; /* Input ile butonun arasını açar */
+  width: 100%;       /* Butonu kart genişliğince yayar */
   transition: background-color 0.2s ease;
 
   &:hover {
@@ -453,4 +454,72 @@ body {
     strong { font-size: 0.9rem; display: block; }
     p { margin: 2px 0 0 0; font-size: 0.8rem; }
   }
+}
+/* ==========================================
+   KOYU MOD (DARK THEME) STİLLERİ
+   ========================================== */
+body.dark-theme {
+  background-color: #090d16 !important;
+  color: #f1f5f9 !important;
+
+  /* Kartlar */
+  .card {
+    background-color: #151d2a !important;
+    border-color: #263346 !important;
+    color: #f8fafc !important;
+
+    .card-header {
+      background-color: #0f172a !important;
+      border-bottom-color: #263346 !important;
+      h3 { color: #f8fafc !important; }
+    }
+  }
+
+  /* Input, Select ve Arama Kutuları */
+  .form-control, .form-control-sm, .pretty-search-input {
+    background-color: #0f172a !important;
+    border-color: #263346 !important;
+    color: #f8fafc !important;
+
+    &:disabled {
+      background-color: #1e293b !important;
+      color: #64748b !important;
+    }
+  }
+
+  /* Tablolar */
+  .custom-table {
+    th {
+      background-color: #0f172a !important;
+      color: #94a3b8 !important;
+      border-bottom-color: #263346 !important;
+    }
+    td {
+      border-bottom-color: #263346 !important;
+      color: #cbd5e1 !important;
+    }
+    tr.row-sunday { background-color: #0d1527 !important; }
+    tr.row-holiday { background-color: #062319 !important; }
+  }
+
+  /* İK Sayaç Kartları */
+  .summary-card {
+    background-color: #151d2a !important;
+    border-color: #263346 !important;
+    .label { color: #94a3b8 !important; }
+  }
+
+  /* Login Kartı */
+  .login-card {
+    background-color: #151d2a !important;
+    color: #f8fafc !important;
+    .login-header h2 { color: #f8fafc !important; }
+    .login-header p { color: #94a3b8 !important; }
+    .login-header .logo-circle { background-color: #1e293b !important; }
+  }
+}
+
+.btn-theme-toggle {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
 }
