@@ -1,5 +1,5 @@
 <!-- %60 SOL GÖRSEL - %40 SAĞ LOGİN EKRANI -->
-<div *ngIf="!isLoggedIn" style="display: flex; min-height: 100vh; width: 100%; background-color: #ffffff; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+<div *ngIf="!isLoggedIn" [class.dark-mode-active]="isDarkMode" style="display: flex; min-height: 100vh; width: 100%; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
   
   <!-- SOL PANEL (%60) -->
   <div style="flex: 6; position: relative; background: #0f172a url('./demir-celik.jpg') no-repeat center center / cover; display: flex; flex-direction: column; justify-content: space-between; padding: 48px; color: #ffffff; box-sizing: border-box;">
