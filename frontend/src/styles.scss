@@ -158,41 +158,170 @@ body.dark-theme {
     background-color: #dc2626;
   }
 
+  /* ==========================================
+   CSS-ONLY REHBER (DETAYLI TUTORIAL)
+   ========================================== */
+.css-tutorial-modal {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+
+  summary {
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    list-style: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      background-color: #1e293b;
+    }
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &[open] summary {
+    background-color: #dc2626;
+  }
+
+  /* ==========================================
+   CSS-ONLY REHBER (LACİVERT KURUMSAL TEMA)
+   ========================================== */
+.css-tutorial-modal {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+
+  /* Sağ Alttaki Buton */
+  summary {
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    list-style: none;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    transition: all 0.2s ease;
+    border: 1px solid #334155;
+
+    &:hover {
+      transform: translateY(-2px);
+      background-color: #1e293b;
+    }
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &[open] summary {
+    background-color: #dc2626;
+    border-color: #ef4444;
+  }
+
+  /* Açılan Lacivert Kutucuk */
   .tutorial-box {
     position: absolute;
-    bottom: 55px;
+    bottom: 60px;
     right: 0;
-    width: 320px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
-    animation: popupFade 0.2s ease-out;
+    width: 380px;
+    max-height: 480px;
+    overflow-y: auto;
+    background-color: #0f172a !important; /* Koyu Lacivert Arka Plan */
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid #334155;
+    color: #f8fafc !important;
+    animation: popupFade 0.25s ease-out;
 
-    h4 { margin: 0 0 10px 0; font-size: 1.1rem; color: #0f172a; display: flex; align-items: center; gap: 6px; }
-    ul { padding-left: 18px; margin: 0; font-size: 0.85rem; color: #475569; }
-    li { margin-bottom: 8px; line-height: 1.4; }
-  }
-}
+    /* İnce kaydırma çubuğu */
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
-body.dark-theme .css-tutorial-modal .tutorial-box {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-  color: #f8fafc !important;
-  h4 { color: #f8fafc !important; }
-  ul { color: #cbd5e1 !important; }
+    .tutorial-header-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff !important;
+      margin: 0 0 16px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tutorial-section {
+      margin-bottom: 18px;
+
+      h5 {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #fca5a5 !important; /* Açık Kırmızı / Pembe Başlıklar */
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      p {
+        font-size: 0.83rem;
+        color: #cbd5e1 !important; /* Açık Gri Metinler */
+        line-height: 1.55;
+        margin: 0;
+
+        strong {
+          color: #ffffff !important;
+        }
+      }
+
+      ul {
+        padding-left: 16px;
+        margin: 6px 0 0 0;
+        font-size: 0.83rem;
+        color: #cbd5e1 !important;
+
+        li {
+          margin-bottom: 6px;
+          line-height: 1.45;
+
+          strong {
+            color: #ffffff !important;
+          }
+        }
+      }
+    }
+  </div>
 }
 
 @keyframes popupFade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* MOBİL ÖZEL UYARLAMA */
 @media (max-width: 480px) {
   .css-tutorial-modal {
-    bottom: 15px; right: 15px;
-    .tutorial-box { width: 280px; right: -10px; }
+    bottom: 16px;
+    right: 16px;
+    .tutorial-box {
+      width: calc(100vw - 32px);
+      right: -10px;
+      max-height: 420px;
+    }
   }
 }
