@@ -125,4 +125,74 @@ body.dark-theme {
 /* Mobil Cihazların Zorunlu Sistem Karartmasını Geçersiz Kıl */
 :root {
   color-scheme: light dark;
+}/* ==========================================
+   CSS-ONLY REHBER (TUTORIAL) STİLLERİ
+   ========================================== */
+.css-tutorial-modal {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+
+  summary {
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    list-style: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    transition: transform 0.2s;
+
+    &:hover { transform: scale(1.05); }
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &[open] summary {
+    background-color: #dc2626;
+  }
+
+  .tutorial-box {
+    position: absolute;
+    bottom: 55px;
+    right: 0;
+    width: 320px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    animation: popupFade 0.2s ease-out;
+
+    h4 { margin: 0 0 10px 0; font-size: 1.1rem; color: #0f172a; display: flex; align-items: center; gap: 6px; }
+    ul { padding-left: 18px; margin: 0; font-size: 0.85rem; color: #475569; }
+    li { margin-bottom: 8px; line-height: 1.4; }
+  }
+}
+
+body.dark-theme .css-tutorial-modal .tutorial-box {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+  h4 { color: #f8fafc !important; }
+  ul { color: #cbd5e1 !important; }
+}
+
+@keyframes popupFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .css-tutorial-modal {
+    bottom: 15px; right: 15px;
+    .tutorial-box { width: 280px; right: -10px; }
+  }
 }

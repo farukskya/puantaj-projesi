@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
   loginSifre: string = '';
   loginHata: string = '';
   currentUser: Personel | null = null;
+  
 
   isDarkMode: boolean = false;
   aramaMetni: string = '';
@@ -66,6 +67,7 @@ export class AppComponent implements OnInit {
   toplamMazeret: number = 0;
   toplamDevamsiz: number = 0;
   toplamCalisilanSaatMetni: string = '0 Saat 0 Dakika';
+  
 
   direktorlikler: string[] = [
     'Teknoloji ve Yazılım Direktörlüğü',
