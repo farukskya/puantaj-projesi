@@ -1,33 +1,102 @@
-<!-- LOGIN EKRANI -->
-<div class="login-wrapper" *ngIf="!isLoggedIn">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="logo-circle">🏢</div>
-      <h2>Puantaj Portal</h2>
-      <p>Kurumsal İK & Vardiya Yönetim Sistemi</p>
-    </div>
-    <div class="login-body">
-      <div class="form-group mb-3">
-        <label>SİCİL NUMARASI</label>
-        <div class="input-with-icon">
-          <span class="input-icon">🆔</span>
+<!-- %60 SOL GÖRSEL - %40 SAĞ LOGİN EKRANI -->
+<div *ngIf="!isLoggedIn" style="display: flex; min-height: 100vh; width: 100%; background-color: #ffffff; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+  
+  <!-- SOL PANEL (%60) -->
+  <div style="flex: 6; position: relative; background: #0f172a url('./demir-celik.jpg') no-repeat center center / cover; display: flex; flex-direction: column; justify-content: space-between; padding: 48px; color: #ffffff; box-sizing: border-box;">
+    <!-- Hafif Karartma Film Katmanı -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.40) 100%); z-index: 1;"></div>
+    
+    <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);">
+      <!-- Üst Başlık -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="background-color: #dc2626; color: #ffffff; font-weight: 900; padding: 8px 14px; border-radius: 6px; font-size: 1rem; letter-spacing: 1.5px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">İK PORTAL</div>
+        <div style="display: flex; flex-direction: column; font-size: 0.85rem; line-height: 1.2;">
+          <strong style="font-size: 0.95rem;">Demir Çelik Sanayi</strong>
+          <span style="opacity: 0.95; font-size: 0.75rem;">ve Ticaret A.Ş.</span>
+        </div>
+      </div>
 
-          <input type="text" class="form-control" [(ngModel)]="loginSicil" placeholder="Örn: ADMIN veya PER-1021" />
-        </div>
+      <!-- Orta Hero Metin -->
+      <div style="max-width: 560px; margin: auto 0;">
+        <span style="color: #fca5a5; font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; display: block; margin-bottom: 12px;">— KURUMSAL İK & VARDİYA PORTALI</span>
+        <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin-bottom: 16px; color: #ffffff;">Elektronik Puantaj ve<br>Vardiya Yönetim Sistemi</h1>
+        <p style="font-size: 0.95rem; line-height: 1.6; color: #f8fafc; opacity: 0.9;">
+          Entegre demir-çelik tesisleri bünyesindeki tüm müdürlük ve sahaların anlık vardiya, mazeret ve İK takip platformu.
+        </p>
       </div>
-      <div class="form-group mb-4 mt-3">
-        <label>GİRİŞ ŞİFRESİ</label>
-        <div class="input-with-icon">
-          <span class="input-icon">🔒</span>
-          <input type="password" class="form-control" [(ngModel)]="loginSifre" placeholder="Şifreniz (Varsayılan: 1234)" (keyup.enter)="girisYap()" />
-        </div>
+
+      <!-- Alt Slogan -->
+      <div style="font-size: 0.88rem; border-left: 3px solid #dc2626; padding-left: 14px; color: #ffffff; font-style: italic;">
+        "Geleceğe uzanan sanayi ve üretim gücü."
       </div>
-      <div class="alert alert-danger" *ngIf="loginHata">
-        {{ loginHata }}
-      </div>
-      <button class="btn-login" (click)="girisYap()">Sisteme Giriş Yap ➔</button>
     </div>
   </div>
+
+  <!-- SAĞ PANEL (%40) -->
+  <div style="flex: 4; background-color: #ffffff; display: flex; align-items: center; justify-content: center; padding: 40px; box-sizing: border-box;">
+    <div style="max-width: 380px; width: 100%;">
+      
+      <div style="margin-bottom: 24px;">
+        <span style="font-size: 0.75rem; color: #16a34a; background-color: #f0fdf4; padding: 4px 10px; border-radius: 20px; font-weight: 600;">🟢 Güvenli Oturum</span>
+      </div>
+
+      <div style="margin-bottom: 28px;">
+        <span style="color: #dc2626; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">— HOŞ GELDİNİZ</span>
+        <h2 style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">Sistem Girişi</h2>
+        <p style="font-size: 0.88rem; color: #64748b; margin: 0;">Devam etmek için sicil numaranızı ve şifrenizi giriniz.</p>
+      </div>
+
+      <div>
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 6px;">SİCİL NUMARASI / TC</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 14px; font-size: 1rem;">🆔</span>
+            <input 
+              type="text" 
+              [(ngModel)]="loginSicil" 
+              placeholder="Örn: ADMIN veya PER-1021" 
+              style="width: 100%; padding: 12px 14px 12px 42px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #0f172a; box-sizing: border-box; outline: none;"
+            />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 6px;">GİRİŞ ŞİFRESİ</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 14px; font-size: 1rem;">🔒</span>
+            <input 
+              type="password" 
+              [(ngModel)]="loginSifre" 
+              placeholder="Şifreniz (Varsayılan: 1234)" 
+              (keyup.enter)="girisYap()" 
+              style="width: 100%; padding: 12px 14px 12px 42px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #0f172a; box-sizing: border-box; outline: none;"
+            />
+          </div>
+        </div>
+
+        <div *ngIf="loginHata" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px;">
+          {{ loginHata }}
+        </div>
+
+        <button 
+          (click)="girisYap()" 
+          style="width: 100%; background-color: #0f172a; color: #ffffff; padding: 14px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s;"
+        >
+          Sisteme Giriş Yap ➔
+        </button>
+
+        <div style="margin-top: 36px; text-align: center; font-size: 0.75rem; color: #94a3b8;">
+          <p style="margin: 0 0 4px 0;">© 2026 Demir Çelik Sanayi A.Ş.</p>
+          <div>
+            <a href="#" (click)="$event.preventDefault()" style="color: #64748b; text-decoration: none;">Bilgi İşlem</a> • 
+            <a href="#" (click)="$event.preventDefault()" style="color: #64748b; text-decoration: none;">KVKK</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <!-- UYGULAMA ARAYÜZÜ -->
