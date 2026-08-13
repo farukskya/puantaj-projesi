@@ -553,3 +553,73 @@ body.dark-theme,
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* ==========================================
+   MOBİL AYDINLIK MOD DÜZELTMESİ
+   ========================================== */
+@media (max-width: 768px) {
+  /* Telefon sistemi koyu modda olsa bile aydınlık modu tam beyaz yap */
+  body:not(.dark-theme) {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+
+    .content-area {
+      background-color: #f8fafc !important;
+    }
+
+    .card {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+
+      .card-header {
+        background-color: #ffffff !important;
+        border-bottom-color: #e2e8f0 !important;
+
+        h3 {
+          color: #0f172a !important;
+        }
+      }
+    }
+
+    .form-control, 
+    .form-control-sm, 
+    .pretty-search-input {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+
+      &:disabled {
+        background-color: #f1f5f9 !important;
+        color: #64748b !important;
+      }
+    }
+
+    .custom-table {
+      th {
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+        border-bottom-color: #e2e8f0 !important;
+      }
+      td {
+        border-bottom-color: #e2e8f0 !important;
+        color: #0f172a !important;
+      }
+      tr.row-sunday { background-color: #f8fafc !important; }
+      tr.row-holiday { background-color: #f0fdf4 !important; }
+    }
+
+    .summary-card {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      .label { color: #64748b !important; }
+    }
+
+    .login-card {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      .login-header h2 { color: #0f172a !important; }
+      .login-header p { color: #64748b !important; }
+      .login-header .logo-circle { background-color: #eff6ff !important; }
+    }
+  }
+}
