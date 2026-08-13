@@ -172,31 +172,29 @@ export class AppComponent implements OnInit {
     document.body.classList.remove('dark-theme');
     this.isDarkMode = false;
   }
-  otomatikDurumHesapla(giris: string, cikis: string): string {
-  if (!giris || !cikis) return 'BİLGİ EKSİK';
+otomatikDurumHesapla(p: any) {
+  if (!p || !p.girisSaati || !p.cikisSaati) return;
 
-  // Standart Vardiya Saatleri (08:00 - 16:00)
-  const vardiyaBaslangic = '08:00';
-  const vardiyaBitis = '16:00';
+  const girisSaat = parseInt(p.girisSaati.split(':')[0]);
+  const cikisSaat = parseInt(p.cikisSaati.split(':')[0]);
 
-  // Giriş Geç mi? (08:00'den sonra mı geldi?)
-  if (giris > vardiyaBaslangic) {
-    const girisSaat = parseInt(giris.split(':')[0]);
-    const baslangicSaat = parseInt(vardiyaBaslangic.split(':')[0]);
-    const fark = girisSaat - baslangicSaat;
-    return `GEÇ GİRİŞ (${fark} Saat Geç)`;
+  // 1. ÖNCE GİRİŞ SAATİNE BAK (08:00'den geç girildiyse direkt GEÇ GİRİŞ)
+  if (girisSaat > 8) {
+    const fark = girisSaat - 8;
+    p.durum = 'GEC_GIRIS';
+    p.durumMetni = `GEÇ GİRİŞ (${fark} Saat Geç)`;
+  } 
+  // 2. SONRA ÇIKIŞ SAATİNE BAK (16:00'dan erken çıkıldıysa ERKEN ÇIKTI)
+  else if (cikisSaat < 16) {
+    const fark = 16 - cikisSaat;
+    p.durum = 'ERKEN_CIKTI';
+    p.durumMetni = `ERKEN ÇIKTI (${fark} Saat Eksik)`;
+  } 
+  // 3. HER ŞEY NORMAL İSE
+  else {
+    p.durum = 'NORMAL';
+    p.durumMetni = 'NORMAL (8 Saat)';
   }
-
-  // Çıkış Erken mi? (16:00'dan önce mi çıktı?)
-  if (cikis < vardiyaBitis) {
-    const cikisSaat = parseInt(cikis.split(':')[0]);
-    const bitisSaat = parseInt(vardiyaBitis.split(':')[0]);
-    const fark = bitisSaat - cikisSaat;
-    return `ERKEN ÇIKTI (${fark} Saat Eksik)`;
-  }
-
-  // Tam zamanında
-  return 'NORMAL (8 Saat)';
 }
 
   profilKaydet() {
