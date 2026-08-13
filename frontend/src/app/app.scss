@@ -448,12 +448,15 @@ body {
   }
 }
 
-/* ==========================================
-   KOYU MOD (DARK THEME) UYARLAMALARI
-   ========================================== */
-body.dark-theme {
+/* KOYU MOD KESİN ÇÖZÜM */
+body.dark-theme,
+.layout-wrapper.dark-theme {
   background-color: #090d16 !important;
   color: #f1f5f9 !important;
+
+  .content-area {
+    background-color: #090d16 !important;
+  }
 
   .card {
     background-color: #151d2a !important;
@@ -503,7 +506,6 @@ body.dark-theme {
     color: #f8fafc !important;
   }
 }
-
 /* ==========================================
    MOBİL (RESPONSIVE) TASARIM
    ========================================== */

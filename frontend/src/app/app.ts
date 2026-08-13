@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
@@ -30,7 +30,8 @@ interface GunlukPuantaj {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
-  styleUrls: ['./app.scss']
+  styleUrls: ['./app.scss'] ,
+  encapsulation: ViewEncapsulation.None // <--- BU SATIR KOYU MODUN ÇALIŞMASINI GARANTİLER
 })
 export class AppComponent implements OnInit {
   isLoggedIn: boolean = false;
