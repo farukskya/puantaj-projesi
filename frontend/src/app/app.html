@@ -431,47 +431,41 @@
   </div>
 </details>
 
+ <!-- KULLANIM REHBERİ (SADECE GİRİŞ YAPILDIĞINDA GÖRÜNÜR) -->
+<details class="css-tutorial-modal" *ngIf="isLoggedIn">
   <summary>❓ Kullanım Rehberi</summary>
   <div class="tutorial-box">
-    
     <div class="tutorial-header-title">
       <span>🏭</span> Sistem & Puantaj Rehberi
     </div>
 
-    <!-- Bölüm 1 -->
     <div class="tutorial-section">
       <h5>🔑 1. Sistem Girişi & Oturum</h5>
       <p>Giriş ekranında Sicil Numarası veya ADMIN yetkisi ile oturum açabilirsiniz. Geçerli şifre varsayılan olarak <strong>1234</strong> tanımlanmıştır.</p>
     </div>
 
-    <!-- Bölüm 2 -->
     <div class="tutorial-section">
       <h5>🔍 2. Filtreleme & Personel Arama</h5>
       <p>Arama çubuğunu kullanarak anlık sorgulama yapabilirsiniz:</p>
       <ul>
         <li><strong>Sicil / İsim:</strong> Personel kartından hızlı süzme.</li>
         <li><strong>Müdürlük / Vardiya:</strong> Tesis içi birim bazlı listeleme.</li>
-        <li><strong>Durum Filtresi:</strong> Raporlu, İzinli veya Vardiyadaki personelleri ayırma.</li>
       </ul>
     </div>
 
-    <!-- Bölüm 3 -->
     <div class="tutorial-section">
       <h5>📅 3. Puantaj & Mazeret Yönetimi</h5>
-      <p>Tablo üzerindeki hücrelere tıklayarak günlük vardiya durumlarını (Giriş/Çıkış saatleri, Mesai, Mazeret İzni, Sevk/Rapor) anlık olarak güncelleyebilir ve kaydedebilirsiniz.</p>
+      <p>Tablo üzerinden günlük vardiya durumlarını, mazeret izinlerini ve çalışma saatlerini güncelleyebilirsiniz.</p>
     </div>
 
-    <!-- Bölüm 4 -->
     <div class="tutorial-section">
       <h5>📊 4. Excel & İK Raporlama</h5>
-      <p>Hazırlanan aylık ve haftalık puantaj verilerini kurumsal formata uygun şekilde <strong>.XLSX / Excel</strong> formatında tek tıkla bilgisayarınıza indirebilirsiniz.</p>
+      <p>Aylık puantaj verilerini <strong>.XLSX / Excel</strong> formatında tek tıkla indirebilirsiniz.</p>
     </div>
 
-    <!-- Bölüm 5 -->
     <div class="tutorial-section">
       <h5>🌙 5. Tema & Mobil Erişim</h5>
-      <p>Sağ üst köşedeki buton ile Gece/Gündüz modları arasında geçiş yapabilir; tablet ve mobil cihazlardan vardiya takibini kesintisiz sürdürebilirsiniz.</p>
+      <p>Sağ üstteki buton ile Koyu Mod'a geçebilir, mobil cihazlardan erişebilirsiniz.</p>
     </div>
-
   </div>
 </details>
