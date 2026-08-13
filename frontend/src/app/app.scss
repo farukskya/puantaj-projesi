@@ -6,6 +6,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8fafc;
   color: #0f172a;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ==========================================
@@ -119,6 +120,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex-shrink: 0;
 
   .brand {
     display: flex;
@@ -197,6 +199,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* ARAMA KUTUSU */
@@ -290,9 +293,16 @@ body {
   }
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .custom-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 650px;
 
   th, td {
     padding: 12px 14px;
@@ -306,13 +316,8 @@ body {
     font-weight: 600;
   }
 
-  tr.row-sunday {
-    background-color: #f8fafc;
-  }
-
-  tr.row-holiday {
-    background-color: #f0fdf4;
-  }
+  tr.row-sunday { background-color: #f8fafc; }
+  tr.row-holiday { background-color: #f0fdf4; }
 }
 
 .badge {
@@ -331,7 +336,7 @@ body {
 /* İK İSTATİSTİK KARTLARI */
 .ik-summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -345,8 +350,8 @@ body {
   flex-direction: column;
   align-items: center;
 
-  .count { font-size: 1.25rem; font-weight: 800; }
-  .label { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+  .count { font-size: 1.2rem; font-weight: 800; text-align: center; }
+  .label { font-size: 0.75rem; color: #64748b; margin-top: 4px; text-align: center; }
 
   &.purple .count { color: #8b5cf6; }
   &.blue .count { color: #2563eb; }
@@ -377,27 +382,19 @@ body {
   }
 }
 
+/* BUTONLAR */
 .btn-navy {
   background-color: #1e293b;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 18px; /* Input ile butonun arasını açar */
-  width: 100%;       /* Butonu kart genişliğince yayar */
-  transition: background-color 0.2s ease;
 
-  &:hover {
-    background-color: #0f172a;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  &:hover { background-color: #0f172a; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .btn-green {
@@ -409,11 +406,8 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 
-  &:hover {
-    background-color: #047857;
-  }
+  &:hover { background-color: #047857; }
 }
 
 .btn-sm-action {
@@ -425,9 +419,12 @@ body {
   font-size: 0.75rem;
   cursor: pointer;
 
-  &:hover {
-    background-color: #cbd5e1;
-  }
+  &:hover { background-color: #cbd5e1; }
+}
+
+.btn-theme-toggle {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
 }
 
 .btn-logout { margin-top: auto; color: #ef4444 !important; }
@@ -444,25 +441,20 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 
-  .toast-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
+  .toast-content { display: flex; align-items: center; gap: 10px; }
   .toast-text {
     strong { font-size: 0.9rem; display: block; }
     p { margin: 2px 0 0 0; font-size: 0.8rem; }
   }
 }
+
 /* ==========================================
-   KOYU MOD (DARK THEME) STİLLERİ
+   KOYU MOD (DARK THEME) UYARLAMALARI
    ========================================== */
 body.dark-theme {
   background-color: #090d16 !important;
   color: #f1f5f9 !important;
 
-  /* Kartlar */
   .card {
     background-color: #151d2a !important;
     border-color: #263346 !important;
@@ -475,7 +467,6 @@ body.dark-theme {
     }
   }
 
-  /* Input, Select ve Arama Kutuları */
   .form-control, .form-control-sm, .pretty-search-input {
     background-color: #0f172a !important;
     border-color: #263346 !important;
@@ -487,7 +478,6 @@ body.dark-theme {
     }
   }
 
-  /* Tablolar */
   .custom-table {
     th {
       background-color: #0f172a !important;
@@ -502,24 +492,62 @@ body.dark-theme {
     tr.row-holiday { background-color: #062319 !important; }
   }
 
-  /* İK Sayaç Kartları */
   .summary-card {
     background-color: #151d2a !important;
     border-color: #263346 !important;
     .label { color: #94a3b8 !important; }
   }
 
-  /* Login Kartı */
-  .login-card {
-    background-color: #151d2a !important;
+  .btn-sm-action {
+    background-color: #263346 !important;
     color: #f8fafc !important;
-    .login-header h2 { color: #f8fafc !important; }
-    .login-header p { color: #94a3b8 !important; }
-    .login-header .logo-circle { background-color: #1e293b !important; }
   }
 }
 
-.btn-theme-toggle {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #f8fafc !important;
+/* ==========================================
+   MOBİL (RESPONSIVE) TASARIM
+   ========================================== */
+@media (max-width: 768px) {
+  .layout-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+
+    .nav-menu {
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      .nav-item {
+        flex: 1 1 calc(50% - 8px);
+        font-size: 0.8rem;
+        padding: 8px 10px;
+      }
+    }
+  }
+
+  .content-area {
+    padding: 12px;
+  }
+
+  .card-header-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+
+    .header-actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .pretty-search, .pretty-search-input {
+        width: 100% !important;
+      }
+    }
+  }
+
+  .ik-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
