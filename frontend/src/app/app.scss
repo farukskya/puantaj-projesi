@@ -623,3 +623,72 @@ body.dark-theme,
     }
   }
 }
+/* MOBİL BROWSER DARK MODE FORCE İPTALİ */
+:root {
+  color-scheme: only light !important;
+}
+
+html, body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Koyu mod butonu kapalıyken mobil cihazdaki tüm zorlamaları ez */
+body:not(.dark-theme) {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+
+  div, main, section, aside, card, table, tr, td, th, input, select {
+    box-shadow: none;
+  }
+
+  .layout-wrapper,
+  .content-area,
+  .login-wrapper {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  .card,
+  .summary-card,
+  .login-card {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+
+  .card-header {
+    background-color: #ffffff !important;
+    border-bottom-color: #e2e8f0 !important;
+    h3 { color: #0f172a !important; }
+  }
+
+  input, select, textarea,
+  .form-control, .form-control-sm, .pretty-search-input {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    -webkit-appearance: none;
+    border-radius: 6px;
+
+    &:disabled {
+      background-color: #f1f5f9 !important;
+      color: #64748b !important;
+    }
+  }
+
+  .custom-table {
+    background-color: #ffffff !important;
+    th {
+      background-color: #f8fafc !important;
+      color: #64748b !important;
+      border-bottom-color: #e2e8f0 !important;
+    }
+    td {
+      background-color: #ffffff !important;
+      border-bottom-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+  }
+}
