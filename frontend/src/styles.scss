@@ -157,44 +157,7 @@ body.dark-theme {
   &[open] summary {
     background-color: #dc2626;
   }
-
-  /* ==========================================
-   CSS-ONLY REHBER (DETAYLI TUTORIAL)
-   ========================================== */
-.css-tutorial-modal {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-
-  summary {
-    background-color: #0f172a;
-    color: #ffffff;
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    list-style: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
-    transition: all 0.2s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      background-color: #1e293b;
-    }
-    &::-webkit-details-marker { display: none; }
-  }
-
-  &[open] summary {
-    background-color: #dc2626;
-  }
-
-  /* ==========================================
+/* ==========================================
    CSS-ONLY REHBER (LACİVERT KURUMSAL TEMA)
    ========================================== */
 .css-tutorial-modal {
@@ -203,7 +166,6 @@ body.dark-theme {
   right: 24px;
   z-index: 9999;
 
-  /* Sağ Alttaki Buton */
   summary {
     background-color: #0f172a;
     color: #ffffff;
@@ -233,7 +195,6 @@ body.dark-theme {
     border-color: #ef4444;
   }
 
-  /* Açılan Lacivert Kutucuk */
   .tutorial-box {
     position: absolute;
     bottom: 60px;
@@ -241,7 +202,7 @@ body.dark-theme {
     width: 380px;
     max-height: 480px;
     overflow-y: auto;
-    background-color: #0f172a !important; /* Koyu Lacivert Arka Plan */
+    background-color: #0f172a !important;
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.5);
@@ -249,7 +210,6 @@ body.dark-theme {
     color: #f8fafc !important;
     animation: popupFade 0.25s ease-out;
 
-    /* İnce kaydırma çubuğu */
     &::-webkit-scrollbar { width: 5px; }
     &::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
@@ -271,7 +231,7 @@ body.dark-theme {
       h5 {
         font-size: 0.88rem;
         font-weight: 700;
-        color: #fca5a5 !important; /* Açık Kırmızı / Pembe Başlıklar */
+        color: #fca5a5 !important;
         margin: 0 0 6px 0;
         display: flex;
         align-items: center;
@@ -280,7 +240,7 @@ body.dark-theme {
 
       p {
         font-size: 0.83rem;
-        color: #cbd5e1 !important; /* Açık Gri Metinler */
+        color: #cbd5e1 !important;
         line-height: 1.55;
         margin: 0;
 
@@ -305,7 +265,7 @@ body.dark-theme {
         }
       }
     }
-  </div>
+  }
 }
 
 @keyframes popupFade {
@@ -313,7 +273,6 @@ body.dark-theme {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* MOBİL ÖZEL UYARLAMA */
 @media (max-width: 480px) {
   .css-tutorial-modal {
     bottom: 16px;
@@ -324,4 +283,5 @@ body.dark-theme {
       max-height: 420px;
     }
   }
+} 
 }
