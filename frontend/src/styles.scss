@@ -1,157 +1,80 @@
-/* You can add global styles to this file, and also import other style files */
-/* Izgara Düzeni (Sağ Panel Açılınca Yan Yana Gelir) */
-.dashboard-grid.has-sidebar {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 16px;
+/* ==========================================
+   GLOBAL RESET & TEMA TANIMLARI
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.btn-ik {
-  background: #0284c7;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
-  cursor: pointer;
-  font-weight: 600;
-
-  &:hover {
-    background: #0369a1;
-  }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Sağ İK Paneli */
-.right-ik-panel {
-  .btn-close {
-    border: none;
-    background: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #64748b;
+/* ==========================================
+   KOYU MOD (DARK THEME) STİLLERİ
+   ========================================== */
+body.dark-theme {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+
+  .layout-wrapper, .content-area {
+    background-color: #0b0f19 !important;
   }
 
-  .user-summary-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 12px;
+  /* Üst Navbar ve Koyu Lacivert/Siyah Kartlar */
+  .top-navbar, .card, .summary-card, .filter-bar-grid {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+  }
 
-    p {
-      margin: 2px 0;
-      font-size: 11px;
+  .card-header h3, .card-header .subtitle {
+    color: #f8fafc !important;
+  }
+
+  /* Tablolar */
+  .custom-table {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+
+    th {
+      background-color: #0f172a !important;
+      color: #94a3b8 !important;
+      border-color: #334155 !important;
+    }
+
+    td {
+      border-color: #334155 !important;
+      color: #cbd5e1 !important;
+    }
+
+    tr:hover {
+      background-color: #334155 !important;
     }
   }
 
-  .ik-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
+  /* Form Elemanları ve Açılır Menüler (Select/Input) */
+  .form-control, .form-control-sm, .pretty-search-input, select {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
 
-    .stat-card {
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-
-      .stat-val { font-weight: 700; font-size: 12px; }
-      .stat-lbl { font-size: 9px; opacity: 0.8; }
-
-      &.green { background: #dcfce7; color: #15803d; }
-      &.orange { background: #fef9c3; color: #a16207; }
-      &.red { background: #ffebee; color: #c62828; }
+    &:focus {
+      border-color: #3b82f6 !important;
     }
   }
 
-  .ik-history-list {
-    h4 {
-      font-size: 12px;
-      margin: 0 0 8px 0;
-      color: #334155;
-    }
-
-    .mini-table {
-      width: 100%;
-      border-collapse: collapse;
-
-      th {
-        font-size: 10px;
-        background: #f1f5f9;
-        padding: 6px;
-        text-align: left;
-      }
-
-      td {
-        font-size: 10px;
-        padding: 6px;
-        border-bottom: 1px solid #f1f5f9;
-      }
-
-      .mini-badge {
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: 600;
-        font-size: 9px;
-      }
-    }
-  }
-}
-.flex-end {
-  display: flex;
-  align-items: flex-end;
-}
-
-/* İK Aylık Özet Kartları */
-.ik-summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-
-  .summary-card {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .card-num {
-      font-size: 16px;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .card-txt {
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 4px;
-      font-weight: 600;
-    }
-
-    &.blue .card-num { color: #0284c7; }
-    &.green .card-num { color: #16a34a; }
-    &.orange .card-num { color: #d97706; }
-    &.red .card-num { color: #dc2626; }
-  }
-}
-
-/* 30 Günlük Satır Renklendirmeleri */
-.monthly-table {
-  tr.row-weekoff {
-    background-color: #f8fafc;
-    color: #94a3b8;
+  /* Koyu Lacivert Sidebar Uyum */
+  .navy-sidebar {
+    background-color: #090d16 !important;
+    border-right-color: #1e293b !important;
   }
 
-  tr.row-holiday {
-    background-color: #f0fdf4;
-  }
-
-  tr.row-leave {
-    background-color: #fffbeb;
+  .text-muted {
+    color: #94a3b8 !important;
   }
 }
