@@ -113,14 +113,19 @@ export class AppComponent implements OnInit {
 
   girisYap() {
     this.loginHata = '';
+    const girilenSicil = this.loginSicil.trim().toUpperCase();
+    const girilenSifre = this.loginSifre.trim();
+
     let foundUser: Personel | null = null;
 
+    // Depodaki kullanıcıları ara
     Object.keys(this.mockPersonelDeposu).forEach(key => {
-      const p = this.mockPersonelDeposu[key].find(u => u.sicilNo.toUpperCase() === this.loginSicil.trim().toUpperCase());
+      const p = this.mockPersonelDeposu[key].find(u => u.sicilNo.toUpperCase() === girilenSicil);
       if (p) foundUser = p;
     });
 
-    if (!foundUser && (this.loginSicil.toUpperCase() === 'ADMIN' || this.loginSicil.toUpperCase() === '1001')) {
+    // Eğer ADMIN veya 1001 yazıldıysa
+    if (!foundUser && (girilenSicil === 'ADMIN' || girilenSicil === '1001')) {
       foundUser = {
         sicilNo: 'ADMIN',
         adSoyad: 'Sistem Yöneticisi',
@@ -135,7 +140,8 @@ export class AppComponent implements OnInit {
       };
     }
 
-    if (foundUser && (this.loginSifre === (foundUser as Personel).sifre || this.loginSifre === '1234')) {
+    // Şifre Kontrolü
+    if (foundUser && (girilenSifre === (foundUser as Personel).sifre || girilenSifre === '1234')) {
       this.currentUser = foundUser;
       this.profilSifre = this.currentUser.sifre || '1234';
       this.isLoggedIn = true;
