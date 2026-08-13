@@ -172,6 +172,32 @@ export class AppComponent implements OnInit {
     document.body.classList.remove('dark-theme');
     this.isDarkMode = false;
   }
+  otomatikDurumHesapla(giris: string, cikis: string): string {
+  if (!giris || !cikis) return 'BİLGİ EKSİK';
+
+  // Standart Vardiya Saatleri (08:00 - 16:00)
+  const vardiyaBaslangic = '08:00';
+  const vardiyaBitis = '16:00';
+
+  // Giriş Geç mi? (08:00'den sonra mı geldi?)
+  if (giris > vardiyaBaslangic) {
+    const girisSaat = parseInt(giris.split(':')[0]);
+    const baslangicSaat = parseInt(vardiyaBaslangic.split(':')[0]);
+    const fark = girisSaat - baslangicSaat;
+    return `GEÇ GİRİŞ (${fark} Saat Geç)`;
+  }
+
+  // Çıkış Erken mi? (16:00'dan önce mi çıktı?)
+  if (cikis < vardiyaBitis) {
+    const cikisSaat = parseInt(cikis.split(':')[0]);
+    const bitisSaat = parseInt(vardiyaBitis.split(':')[0]);
+    const fark = bitisSaat - cikisSaat;
+    return `ERKEN ÇIKTI (${fark} Saat Eksik)`;
+  }
+
+  // Tam zamanında
+  return 'NORMAL (8 Saat)';
+}
 
   profilKaydet() {
     if (this.currentUser) {
