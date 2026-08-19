@@ -254,22 +254,10 @@
                     <input type="time" class="form-control-sm" [(ngModel)]="p.cikisSaati" (change)="hesaplaDurum(p)" />
                   </td>
                  <!-- Otomatik Durum Hücresi (Doğrudan Ekran Üzerinde Dinamik Hesaplama) -->
-<!-- Otomatik Durum Hücresi (parseInt Olmadan Şablonda Çalışan Dinamik Yapı) -->
 <td>
-  <span [style.background-color]="
-          !p.girisSaati || !p.cikisSaati ? '#ef4444' :
-          (p.girisSaati > '08:00' ? '#f59e0b' :
-          (p.cikisSaati > '16:00' ? '#3b82f6' :
-          (p.cikisSaati < '16:00' ? '#f59e0b' : '#22c55e')))"
+  <span [style.background-color]="durumHesaplaRenk(p)"
         style="color: #ffffff; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.78rem; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-    
-    {{ 
-      !p.girisSaati || !p.cikisSaati ? 'BİLGİ EKSİK' :
-      (p.girisSaati > '08:00' ? 'GEÇ GİRİŞ (1 Saat Geç)' :
-      (p.cikisSaati > '16:00' ? 'FAZLA MESAİ (1 Saat Mesai)' :
-      (p.cikisSaati < '16:00' ? 'ERKEN ÇIKTI (1 Saat Eksik)' : 'NORMAL (8 Saat)')))
-    }}
-
+    {{ durumHesaplaMetin(p) }}
   </span>
 </td>
                   <td>
@@ -428,19 +416,9 @@
 
   </main>
 </div>
-<!-- KULLANIM REHBERİ (SATIROĞLU SIFIR-JS TUTORIAL) -->
 
-    <h4>🏭 Portal Kullanım Rehberi</h4>
-    <ul>
-      <li><strong>🔍 Filtreleme:</strong> Üst panelden Birim, Vardiya veya Sicil No yazarak arama yapabilirsiniz.</li>
-      <li><strong>📅 Puantaj Girişi:</strong> Tablodan personellerin günlük mazeret ve durumlarını güncelleyebilirsiniz.</li>
-      <li><strong>📊 Excel İndir:</strong> Tek tıkla aylık puantajı bilgisayarınıza Excel olarak alabilirsiniz.</li>
-      <li><strong>🌙 Koyu Mod:</strong> Sağ üstteki tema butonundan gece moduna geçebilirsiniz.</li>
-    </ul>
-
-
- <!-- KULLANIM REHBERİ (SADECE GİRİŞ YAPILDIĞINDA GÖRÜNÜR) -->
-<details class="css-tutorial-modal" *ngIf="isLoggedIn">
+<!-- KULLANIM REHBERİ (LOGIN EKRANINDA KESİNLİKLE GÖZÜKMEZ) -->
+<details class="css-tutorial-modal" *ngIf="isLoggedIn && currentUser">
   <summary>❓ Kullanım Rehberi</summary>
   <div class="tutorial-box">
     <div class="tutorial-header-title">

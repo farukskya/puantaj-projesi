@@ -172,29 +172,38 @@ export class AppComponent implements OnInit {
     document.body.classList.remove('dark-theme');
     this.isDarkMode = false;
   }
-otomatikDurumHesapla(p: any) {
-  if (!p || !p.girisSaati || !p.cikisSaati) return;
+durumHesaplaMetin(p: any): string {
+  if (!p || !p.girisSaati || !p.cikisSaati) return 'BİLGİ EKSİK';
 
-  const girisSaat = parseInt(p.girisSaati.split(':')[0]);
-  const cikisSaat = parseInt(p.cikisSaati.split(':')[0]);
+  const gSaat = Number(p.girisSaati.split(':')[0]);
+  const cSaat = Number(p.cikisSaati.split(':')[0]);
 
-  // 1. ÖNCE GİRİŞ SAATİNE BAK (08:00'den geç girildiyse direkt GEÇ GİRİŞ)
-  if (girisSaat > 8) {
-    const fark = girisSaat - 8;
-    p.durum = 'GEC_GIRIS';
-    p.durumMetni = `GEÇ GİRİŞ (${fark} Saat Geç)`;
-  } 
-  // 2. SONRA ÇIKIŞ SAATİNE BAK (16:00'dan erken çıkıldıysa ERKEN ÇIKTI)
-  else if (cikisSaat < 16) {
-    const fark = 16 - cikisSaat;
-    p.durum = 'ERKEN_CIKTI';
-    p.durumMetni = `ERKEN ÇIKTI (${fark} Saat Eksik)`;
-  } 
-  // 3. HER ŞEY NORMAL İSE
-  else {
-    p.durum = 'NORMAL';
-    p.durumMetni = 'NORMAL (8 Saat)';
+  // 08:00'den geç girdiyse (Örn: 10:00 -> 2 Saat Geç)
+  if (p.girisSaati > '08:00') {
+    const fark = gSaat - 8;
+    return `GEÇ GİRİŞ (${fark} Saat Geç)`;
   }
+
+  // 16:00'dan geç çıktıysa (Örn: 18:00 -> 2 Saat Mesai)
+  if (p.cikisSaati > '16:00') {
+    const fark = cSaat - 16;
+    return `FAZLA MESAİ (${fark} Saat Mesai)`;
+  }
+
+  // 16:00'dan erken çıktıysa (Örn: 14:00 -> 2 Saat Eksik)
+  if (p.cikisSaati < '16:00') {
+    const fark = 16 - cSaat;
+    return `ERKEN ÇIKTI (${fark} Saat Eksik)`;
+  }
+
+  return 'NORMAL (8 Saat)';
+}
+
+durumHesaplaRenk(p: any): string {
+  if (!p || !p.girisSaati || !p.cikisSaati) return '#ef4444'; // Kırmızı
+  if (p.girisSaati > '08:00' || p.cikisSaati < '16:00') return '#f59e0b'; // Sarı/Turuncu
+  if (p.cikisSaati > '16:00') return '#3b82f6'; // Mavi
+  return '#22c55e'; // Yeşil
 }
 
   profilKaydet() {
